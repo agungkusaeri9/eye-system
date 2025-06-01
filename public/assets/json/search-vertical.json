@@ -1,0 +1,19 @@
+{
+    "pages": [
+        {
+          "name": "Dashboard",
+          "icon": "ti-smart-home",
+          "url": "/dashboard"
+        },
+        {
+          "name": "Berita Acara",
+          "icon": "ti-news",
+          "url": "/news"
+        },
+        {
+          "name": "E-Sign",
+          "icon": "ti-signature",
+          "url": "/sign"
+        }
+    ]
+}
