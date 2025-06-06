@@ -202,7 +202,7 @@
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">DEPARTMENT</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">NAMA PASIEN</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px">STATUS PASIEN</th>
-                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">TOTAL</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">TOTAL APPROVE</th>
                 </tr>
             </thead>
             <tbody>
@@ -247,7 +247,9 @@
                         @endif
                         <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_name }}</td>
                         <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_status }}</td>
-                        <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
+                        @if ($index === 0)
+                        <td style="text-align:right;vertical-align:middle;white-space:nowrap" rowspan="{{ count($item->details) }}">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
+                        @endif
                     </tr>
                 @endforeach
     
