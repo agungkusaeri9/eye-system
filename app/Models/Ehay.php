@@ -102,6 +102,7 @@ class Ehay extends Model
         static::creating(function ($model) {
             $model->status = 1;
             $model->uuid = \Str::uuid();
+            $model->code = self::generateCode();
         });
     }
 
@@ -195,18 +196,18 @@ class Ehay extends Model
 
     public function getDescription()
     {
-        return $this->employee->nrp . ';' . $this->getTreatmentType() . ';' . $this->getMonthYear() . ';' . $this->employee->name;
+        return $this->employee->nrp . ';' . $this->getMonthYear() . ';' . $this->employee->name;
     }
 
-    public function ehayCares()
-    {
-        return $this->hasMany(EhayCare::class);
-    }
+    // public function ehayCares()
+    // {
+    //     return $this->hasMany(EhayCare::class);
+    // }
 
-    public function ehayTreatments()
-    {
-        return $this->hasMany(EhayTreatment::class);
-    }
+    // public function ehayTreatments()
+    // {
+    //     return $this->hasMany(EhayTreatment::class);
+    // }
 
     public function scopeByRole($query)
     {
@@ -255,6 +256,8 @@ class Ehay extends Model
             return "Waiting for Approval 1";
         } elseif ($status == 5) {
             return "Dormant EHAY ready to draw";
+        } else {
+            return "Closed";
         }
     }
 
@@ -291,9 +294,13 @@ class Ehay extends Model
         return $this->ehayTreatments()->sum('nominal');
     }
 
-    public function ehayFiles()
+    public function files()
     {
         return $this->hasMany(EhayFile::class, 'ehay_id', 'id');
     }
 
+    public function details()
+    {
+        return $this->hasMany(EhayDetail::class, 'ehay_id', 'id');
+    }
 }

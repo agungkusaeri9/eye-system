@@ -73,7 +73,7 @@
                     <tr>
                         <th>Tanggal</th>
                         <th>Number</th>
-                        <th>Description</th>
+                        <th>Employee</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -116,8 +116,8 @@
                             name: 'code'
                         },
                         {
-                            data: 'description',
-                            name: 'description'
+                            data: 'employee',
+                            name: 'employee'
                         },
                         {
                             data: 'action',

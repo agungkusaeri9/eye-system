@@ -15,7 +15,7 @@
                     <tr>
                         <th>No</th>
                         <th>Ehay Number</th>
-                        <th>Description</th>
+                        <th>Employee</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -25,7 +25,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,7 +59,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 @endsection
 
 @section('page-script')
@@ -100,8 +100,8 @@
                         name: 'code'
                     },
                     {
-                        data: 'description',
-                        name: 'description'
+                        data: 'employee',
+                        name: 'employee'
                     },
                     {
                         data: 'current_log_status',
@@ -119,29 +119,6 @@
                 let ribuan = reverse.match(/\d{1,3}/g);
                 return ribuan.join('.').split('').reverse().join('');
             }
-
-            $('body').on('click', '.btn-approve', function() {
-                let id = $(this).data('id');
-                let route = '{{ route('ehay.approve', ['id' => ':id']) }}';
-                route = route.replace(':id', id);
-                $('#formApprove').attr('action', route);
-                $.ajax({
-                    url: '{{ route('ehay.getByIdJson') }}',
-                    type: 'GET',
-                    dataType: 'JSON',
-                    data: {
-                        id
-                    },
-                    success: function(data) {
-                        $('#total').val(formatRupiah(data.nominal_total));
-                        $('#nominal').val(formatRupiah(data.nominal_total));
-                    },
-                    error: function(err) {
-                        console.log("error", err);
-                    }
-                })
-                $('#modalApprove').modal('show');
-            });
 
             $('.nominal').on('input', function() {
                 let value = this.value.replace(/\D/g, '');

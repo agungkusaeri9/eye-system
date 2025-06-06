@@ -3,12 +3,12 @@
     <h4 class="fw-bold py-3 mb-34">
         <span class="text-muted fw-light">Data Ehay /</span> Feature / {{ $title }}
     </h4>
+    <form method="POST" enctype="multipart/form-data" action="{{ route('ehay.update', $item->uuid) }}">
     <div class="row">
-        <form method="POST" enctype="multipart/form-data" action="{{ route('ehay.update', $item->uuid) }}">
             @method('patch')
             @csrf
             <!-- Input Mask -->
-            <div class="col-12">
+            <div class="col-md-4">
                 <div class="card mb-34">
                     <h5 class="card-header">{{ $title }}</h5>
                     <div class="card-body">
@@ -56,80 +56,6 @@
                             </div>
                             <div class="col-md-12 col-sm-12 mb-3">
                                 <div class='form-group'>
-                                    <label for='patient_name' class='mb-1'>Nama Pasien</label>
-                                    <input type='text' name='patient_name' id='patient_name'
-                                        class='form-control @error('patient_name') is-invalid @enderror'
-                                        value='{{ $item->patient_name ?? old('patient_name') }}' disabled>
-                                    @error('patient_name')
-                                        <div class='invalid-feedback'>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-sm-12 mb-3">
-                                <div class='form-group'>
-                                    <label for='patient_name' class='mb-1'>Status Pasien</label>
-                                    <input type='text' name='patient_name' id='patient_name'
-                                        class='form-control @error('patient_name') is-invalid @enderror'
-                                        value='{{ $item->patient_status ?? old('patient_name') }}' disabled>
-                                    @error('patient_name')
-                                        <div class='invalid-feedback'>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h5>Pengobatan</h5>
-                                        <ol>
-                                            @foreach ($item->ehayCares as $care)
-                                                <li>
-                                                    <div class="d-flex gap-4">
-                                                        <div>
-                                                            {{ $care->name }}
-                                                        </div>
-                                                        <div>Rp {{ number_format($care->price, 0, '.', '.') }}</div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ol>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h5>Perawatan</h5>
-                                        <ol>
-                                            @foreach ($item->ehayTreatments as $treatment)
-                                                <li>
-                                                    <div class="d-flex gap-4">
-                                                        <div>
-                                                            {{ $treatment->name }}
-                                                        </div>
-                                                        <div>Rp {{ number_format($treatment->price, 0, '.', '.') }}</div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-sm-12 mb-3">
-                                <div class='form-group'>
-                                    <label for='glasses_price' class='mb-1'>Kacamata</label>
-                                    <input type='number' name='glasses_price' id='glasses_price'
-                                        class='form-control @error('glasses_price') is-invalid @enderror'
-                                        value='{{ $item->glasses_price ?? old('glasses_price') }}' disabled>
-                                    @error('glasses_price')
-                                        <div class='invalid-feedback'>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-md-12 col-sm-12 mb-3">
-                                <div class='form-group'>
                                     <label for='remarks' class='mb-1'>Keterangan</label>
                                     <input type='text' name='remarks' id='remarks'
                                         class='form-control @error('remarks') is-invalid @enderror'
@@ -143,7 +69,7 @@
                             </div>
                             <div class="col-md-12 col-sm-12 mb-3">
                                 <div class='form-group'>
-                                    <label for='file' class='mb-1'>Lampiran (PDF,JPG,PNG)</label>
+                                    <label for='file' class='mb-1'>Lampiran (JPG,PNG,JPEG)</label>
                                     <input type='file' name='file[]' id='file'
                                         class='form-control @error('file') is-invalid @enderror' value='' multiple>
                                     @error('file')
@@ -163,104 +89,139 @@
                     </div>
                 </div>
             </div>
-        </form>
+            <div class="col-md-8">
+               <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="card">
+                                <div class="card-header pb-0 d-flex gap-2">
+                                    <h4>Detail</h4>
+                                </div>
+                                <div class="card-body">
+                                   <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th rowspan="2" class="text-center align-middle">Nama Pasien</th>
+                                                <th rowspan="2" class="text-center align-middle">Status Pasien</th>
+                                                <th rowspan="2" class="text-center align-middle">Pengobatan</th>
+                                                <th colspan="2" class="text-center">Perawatan 1</th>
+                                                <th colspan="2" class="text-center">Perawatan 2</th>
+                                                <th rowspan="2" class="text-center align-middle">Kacamata</th>
+                                                <th rowspan="2" class="text-center align-middle">Total</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center">Jenis</th>
+                                                <th class="text-center">Biaya</th>
+                                                <th class="text-center">Jenis</th>
+                                                <th class="text-center">Biaya</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($item->details as $detail)
+                                                <tr>
+                                                    <td>{{ $detail->patient_name }}</td>
+                                                    <td>{{ $detail->patient_status }}</td>
+                                                    <td class="text-end">RP.
+                                                        {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>
+                                                    <td>{{ $detail->care_type1 ?? '-' }}</td>
+                                                    <td class="text-end">RP. {{ number_format($detail->cost_care1, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>{{ $detail->care_type2 ?? '-' }}</td>
+                                                    <td class="text-end">RP. {{ number_format($detail->cost_care2, 0, ',', '.') }}
+                                                    </td>
+                                                    <td class="text-end">RP.
+                                                        {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
+                                                    <td class="text-end">RP.
+                                                        {{ number_format($detail->nominal_total, 0, ',', '.') }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-light">
+                                                <th colspan="8" class="text-end">Total</th>
+                                                <th class="text-end">Rp.
+                                                    {{ number_format($item->details->sum('nominal_total'), 0, ',', '.') }}</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <div class="card">
+                                <div class="card-header pb-0 d-flex gap-2">
+                                    <h4>Files</h4>
+                                </div>
+                                <div class="card-body row">
+                                    @foreach ($item->files as $file)
+                                        @php
+                                            $extension = pathinfo($file->file, PATHINFO_EXTENSION);
+                                        @endphp
+                                        @if ($extension == 'pdf')
+                                            <div class="col-md-3">
+                                                <a href="javascript:void(0)" class="file"
+                                                    data-url={{ asset('storage/' . $file->file) }}>
+                                                    <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
+                                                        class="img-fluid w-full" style="height:80px">
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="col-md-3">
+                                                <a href="javascript:void(0)" class="file"
+                                                    data-url={{ asset('storage/' . $file->file) }}>
+                                                    <img src="{{ asset('storage/' . $file->file) }}" alt="File"
+                                                        class="img-fluid">
+                                                </a>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               </div>
+            </div>
+        </div>
+    </form>
+    <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Lampiran</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img src="" alt="" id="imgDetail" class="img-fluid d-none">
+                    <iframe src="" id="iframeDetail" class="w-100 d-none" style="height: 80vh;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
 @section('page-script')
     <script>
         $(function() {
-            $('#family_id').on('change', function() {
-                let id = $(this).val();
-                console.log(id);
-                $.ajax({
-                    url: '{{ route('families.getById') }}',
-                    type: 'GET',
-                    dataType: 'JSON',
-                    data: {
-                        'id': id
-                    },
-                    success: function(data) {
-                        console.log(data);
-                        if (data) {
-                            $('#patient_name').val(data.name);
-                        }
-                    },
-                    error: function(error) {
-                        console.error(error)
-                    }
-                })
-            })
-
-            // add treatment-container
-            let indexCare = 1;
-
-            $('#add-care').click(function() {
-                let html = `
-            <div class="row care-group mb-3">
-                <div class="col-xl-3 col-md-6 col-sm-12">
-                    <div class='form-group'>
-                        <label for='care_name_${indexCare}'>Pengobatan</label>
-                        <input type="text" name="care_name[]" id="care_name_${indexCare}"
-                            class="form-control">
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 col-sm-12">
-                    <div class='form-group'>
-                        <label for='care_price_${indexCare}' class='mb-1'>Nominal</label>
-                        <input type='number' name='care_price[]' id='care_price_${indexCare}'
-                            class='form-control'>
-                    </div>
-                </div>
-                <div class="col-xl-1 col-md-2 col-sm-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger remove-care">X</button>
-                </div>
-            </div>
-        `;
-                $('#care-container').append(html);
-                indexCare++;
-            });
-
-            // Hapus field pengobatan
-            $(document).on('click', '.remove-care', function() {
-                $(this).closest('.care-group').remove();
-            });
-
-            // add treatment-container
-            let index = 1;
-
-            $('#add-treatment').click(function() {
-                let html = `
-            <div class="row treatment-group mb-3">
-               <div class="col-xl-3 col-md-6 col-sm-12">
-                    <div class='form-group'>
-                        <label for='treatment_name_${index}'>Perawatan</label>
-                        <select name='treatment_name[]' id='treatment_name_${index}' class='form-control'>
-                            <option value='' selected disabled>Pilih Perawatan</option>
-                            <option value="Rawat Inap">Rawat Inap</option>
-                            <option value="Rawat Jalan">Rawat Jalan</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 col-sm-12">
-                    <div class='form-group'>
-                        <label for='treatment_price_${index}' class='mb-1'>Nominal</label>
-                        <input type='number' name='treatment_price[]' id='treatment_price_${index}'
-                            class='form-control'>
-                    </div>
-                </div>
-                <div class="col-xl-1 col-md-2 col-sm-2 d-flex align-items-end">
-                    <button type="button" class="btn btn-danger remove-treatment">X</button>
-                </div>
-            </div>
-        `;
-                $('#treatment-container').append(html);
-                index++;
-            });
-
-            // Hapus field pengobatan
-            $(document).on('click', '.remove-treatment', function() {
-                $(this).closest('.treatment-group').remove();
+            $('body').on('click', '.file', function() {
+                var url = $(this).data('url');
+                var extension = url.split('.').pop();
+                if (extension == 'pdf') {
+                    $('#iframeDetail').removeClass('d-none');
+                    $('#imgDetail').addClass('d-none');
+                    $('#iframeDetail').attr('src', url);
+                } else {
+                    $('#imgDetail').removeClass('d-none');
+                    $('#iframeDetail').addClass('d-none');
+                    $('#imgDetail').attr('src', url);
+                }
+                $('#modalDetail').modal('show');
             });
         })
     </script>

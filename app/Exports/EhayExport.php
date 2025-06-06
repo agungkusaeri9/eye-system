@@ -21,8 +21,11 @@ class EhayExport implements FromView
      */
     public function view(): View
     {
-        $data = Ehay::with(['employee', 'ehayCares', 'ehayTreatments'])->withSum('ehayCares', 'price')
-            ->withSum('ehayTreatments', 'price')->latest();
+        $data = Ehay::with(['employee', 'details'])->withSum('details', 'nominal_total')
+            ->latest();
+
+        // dd($data->get());
+
         if ($this->filter['from_date'] && $this->filter['to_date']) {
             $data->whereDate('created_at', '>=', $this->filter['from_date'])->whereDate('created_at', '<=', $this->filter['to_date']);
         } elseif ($this->filter['from_date'] && !$this->filter['to_date']) {

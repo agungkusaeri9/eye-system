@@ -39,13 +39,13 @@
             width: 100%;
             border-collapse: collapse;
             font-family: Arial, sans-serif;
-            font-size: 13px;
+            font-size: 10px !important;
         }
 
         thead th {
             /* background-color: #f2f2f2; */
             text-align: center;
-            padding: 6px;
+            padding: 2px;
             border: 1px solid black;
         }
 
@@ -57,7 +57,7 @@
         }
 
         tbody td {
-            padding: 6px;
+            padding: 2px;
             border: 1px solid black;
             vertical-align: top;
         }
@@ -90,7 +90,7 @@
         /* Mengatur ukuran dan margin untuk tabel header */
         th,
         td {
-            padding: 6px;
+            padding: 2px;
             text-align: center;
             text-transform: uppercase;
         }
@@ -175,18 +175,15 @@
         <table>
             <thead>
                 <tr>
-                    <th colspan="8" style="text-align: center">KLAIM DEKLARASI PENGOBATAN PERAWATAN DAN KACAMATA</th>
+                    <th colspan="7" style="text-align: center">KLAIM DEKLARASI PENGOBATAN PERAWATAN DAN KACAMATA</th>
                 </tr>
                 <tr>
                     <th colspan="2" style="font-weight:normal;width:3px;border-right:0px solid black !important;"
                         width="3">Tanggal
                     </th>
-                    {{-- <th
-                        style="font-weight:normal;width:40px;border-right:0px solid black !important;border-left:0px solid black !important;text-align:left">
-                        :</th> --}}
                     <th
                         style="font-weight:normal;width:40px;text-align:left;border-left:0px solid black !important;border-right:0px solid black !important">
-                        : {{ date('d-m-Y') }}</th>
+                        : {{ $date }}</th>
                     <th
                         style="font-weight:normal;border-right:0px solid black !important;border-left:0px solid black !important">
                     </th>
@@ -194,49 +191,73 @@
                         style="font-weight:normal;width:20px;border-right:0px solid black !important;border-left:0px solid black !important">
                         ID
                         Rekap</th>
-                    {{-- <th
-                        style="font-weight:normal;width:40px;border-right:0px solid black !important;text-align:left;border-left:0px solid black !important">
-                        :</th> --}}
                     <th
-                        style="font-weight:normal;width:40px;text-align:left;border-right:0px solid black !important;border-left:0px solid black !important">
+                        style="font-weight:normal;width:40px;text-align:left;border-right:1px solid black !important;border-left:0px solid black !important">
                         :</th>
-                    <th style="font-weight:normal;border-left:0px solid black !important"></th>
                 </tr>
                 <tr>
-                    <th style="text-align:center; vertical-align: middle;" width="2">No.</th>
-                    <th style="width:40px;">NRP</th>
-                    <th style="width:130px;">NAMA KARYAWAN</th>
-                    <th style="width:40px;">DEPARTMENT</th>
-                    <th style="width:40px;">PENGOBATAN</th>
-                    <th style="width:80px;">PERAWATAN</th>
-                    <th style="width:80px;">KACAMATA</th>
-                    <th style="width:80px;">TOTAL</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:40px">NO.</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px">NRP</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">NAMA KARYAWAN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">DEPARTMENT</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">NAMA PASIEN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px">STATUS PASIEN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">TOTAL</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach ($items as $item)
-                    <tr>
-                        <td width="2" style="vertical-align: middle;">{{ $loop->iteration }}</td>
-                        <td style="text-align:center">{{ $item->employee->nrp }}</td>
-                        <td style="text-align:center">{{ $item->employee->name }}</td>
-                        <td style="text-align: center">{{ $item->employee->department->name ?? '-' }}</td>
-                        <td class="text-center">{{ number_format($item->ehay_cares_sum_price, 0, ',', ',') }}</td>
-                        <td class="text-center">{{ number_format($item->ehay_treatments_sum_price, 0, ',', ',') }}</td>
-                        <td class="text-center">{{ number_format($item->kacamata, 0, ',', ',') }}</td>
-                        <td class="text-center">{{ number_format($item->nominal_total, 0, ',', ',') }}</td>
+                @php 
+                $currentNumber = null; 
+                $no = 1;
+                $totalPengobatan = 0;
+                $totalPerawatan = 0;
+                $totalKacamata = 0;
+                $grandTotal = 0;
+            @endphp
+    
+            @foreach ($items as $item)
+                @php
+                    $isNewGroup = $currentNumber !== $item->code;
+                    if ($isNewGroup) {
+                        if ($currentNumber !== null) {
+                            // Reset totals for new group
+                            $totalPengobatan = 0;
+                            $totalPerawatan = 0;
+                            $totalKacamata = 0;
+                            $grandTotal = 0;
+                        }
+                        $currentNumber = $item->code;
+                    }
+                @endphp
+    
+                @foreach($item->details as $index => $detail)
+                    @php
+                        $totalPengobatan += $detail->cost_treatment;
+                        $totalPerawatan += ($detail->cost_care1 + $detail->cost_care2);
+                        $totalKacamata += $detail->cost_glasses;
+                        $grandTotal += $detail->nominal_total;
+                    @endphp
+    
+                    <tr class="{{ $index > 0 ? 'no-border-top' : '' }}">
+                        @if ($index === 0)
+                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $no }}</td>
+                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->nrp }}</td>
+                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->name }}</td>
+                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->department->name }}</td>
+                        @endif
+                        <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_name }}</td>
+                        <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_status }}</td>
+                        <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
+    
+                @php $no++; @endphp
+            @endforeach
+            <tr>
+                <td colspan="6" style="text-align:center;vertical-align:middle;font-weight:bold;width:100%">TOTAL</td>
+                <td style="text-align:right;vertical-align:middle;white-space:nowrap font-weight:bold">Rp. {{ number_format($items->sum('nominal_approve'), 0, ',', '.') }}</td>
+            </tr>
             </tbody>
-            <tfoot>
-                <tr>
-                    <th colspan="4" class="text-center">TOTAL</th>
-                    <th class="text-center">{{ number_format($items->sum('ehay_cares_sum_price'), 0, ',', ',') }}</th>
-                    <th class="text-center">{{ number_format($items->sum('ehay_treatments_sum_price'), 0, ',', ',') }}
-                    </th>
-                    <th class="text-center">{{ number_format($items->sum('kacamata'), 0, ',', ',') }}</th>
-                    <th class="text-center">{{ number_format($items->sum('nominal_total'), 0, ',', ',') }}</th>
-                </tr>
-            </tfoot>
         </table>
         <div class="signature-table">
             <header>
@@ -270,6 +291,46 @@
                     <th style="text-transform: capitalize;font-weight:normal;font-size:11px"> Dibuat Oleh :</th>
                     <th style="text-transform: capitalize;font-weight:normal;font-size:11px"> Diperiksa Oleh :</th>
                     <th style="text-transform: capitalize;font-weight:normal;font-size:11px"> Disetujui Oleh :</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
                 <tr>
                     <th></th>

@@ -16,7 +16,7 @@
                     <tr>
                         <th>No.</th>
                         <th>Ehay Number</th>
-                        <th>Description</th>
+                        <th>Employee</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -63,8 +63,8 @@
                         name: 'code'
                     },
                     {
-                        data: 'description',
-                        name: 'description'
+                        data: 'employee',
+                        name: 'employee'
                     },
                     {
                         data: 'current_log_status',

@@ -43,7 +43,8 @@
                     <tr>
                         <th><input type="checkbox" id="select-all"></th>
                         <th>Ehay Number</th>
-                        <th>Description</th>
+                        <th>Employee</th>
+                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -87,8 +88,12 @@
                         name: 'code'
                     },
                     {
-                        data: 'description',
-                        name: 'description'
+                        data: 'employee',
+                        name: 'employee'
+                    },
+                    {
+                        data: 'current_log_status',
+                        name: 'current_log_status'
                     },
                     {
                         data: 'action',

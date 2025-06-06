@@ -9,22 +9,13 @@
                 id="formValidation">
                 @csrf
                 <div class="col mb-2">
-                    {{-- <div class="row">
-                        <div class="col-md-3">
-                            <div class='form-group mb-3'>
-                                <textarea name='notes' id='note' cols='30' rows='3'
-                                    class='form-control @error('note') is-invalid @enderror' placeholder="Must be added when rejected">{{ old('note') }}</textarea>
-                                @error('note')
-                                    <div class='invalid-feedback'>
-                                        {{ $message }}
-                                    </div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div> --}}
                     <div class="row">
                         <div class="col-md">
-                            <button class="btn btn-success" name="btn" value="1">Approve</button>
+                           @if (auth()->user()->role == 4)
+                           <button class="btn btn-success" name="btn" value="1">Approve</button>
+                           @elseif (auth()->user()->role == 5)
+                           <button class="btn btn-success btnApprove" name="btn" type="button" value="1">Approve</button>
+                           @endif
                             <button class="btn btn-danger btnReject" name="btn" value="0">Reject</button>
                         </div>
                     </div>
@@ -33,128 +24,143 @@
         </div>
     </div>
     <div class="row mb-2">
-        <div class="col-md-6">
-            <div class="col-12">
-                <div class="card mb-34">
-                    <h5 class="card-header">{{ $item->code }}</h5>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md">
-                                <div class="row">
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='employee_name' class='mb-1'>NRP</label>
-                                            <input disabled type='text' name='employee_name' id='employee_name'
-                                                class='form-control @error('employee_name') is-invalid @enderror' readonly
-                                                value='{{ $item->employee->nrp ?? old('employee_name') }}'>
-                                            @error('employee_name')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+        <div class="col-md-12 mb-2">
+            <div class="card mb-34">
+                <h5 class="card-header">{{ $item->code }}</h5>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md">
+                            <div class="row">
+                                <div class="col-md-4 col-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='employee_name' class='mb-1'>NRP</label>
+                                        <input disabled type='text' name='employee_name' id='employee_name'
+                                            class='form-control @error('employee_name') is-invalid @enderror' readonly
+                                            value='{{ $item->employee->nrp ?? old('employee_name') }}'>
+                                        @error('employee_name')
+                                            <div class='invalid-feedback'>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='employee_name' class='mb-1'>Nama</label>
-                                            <input disabled type='text' name='employee_name' id='employee_name'
-                                                class='form-control @error('employee_name') is-invalid @enderror' readonly
-                                                value='{{ $item->employee->name ?? old('employee_name') }}'>
-                                            @error('employee_name')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='employee_name' class='mb-1'>Nama</label>
+                                        <input disabled type='text' name='employee_name' id='employee_name'
+                                            class='form-control @error('employee_name') is-invalid @enderror' readonly
+                                            value='{{ $item->employee->name ?? old('employee_name') }}'>
+                                        @error('employee_name')
+                                            <div class='invalid-feedback'>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
+                                </div>
 
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='employee_department' class='mb-1'>Department</label>
-                                            <input disabled type='text' name='employee_department'
-                                                id='employee_department'
-                                                class='form-control @error('employee_department') is-invalid @enderror'
-                                                value='{{ $item->employee->department->name ?? old('employee_department') }}'
-                                                readonly>
-                                            @error('employee_department')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='employee_department' class='mb-1'>Department</label>
+                                        <input disabled type='text' name='employee_department' id='employee_department'
+                                            class='form-control @error('employee_department') is-invalid @enderror'
+                                            value='{{ $item->employee->department->name ?? old('employee_department') }}'
+                                            readonly>
+                                        @error('employee_department')
+                                            <div class='invalid-feedback'>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='patient_name' class='mb-1'>Nama Pasien</label>
-                                            <input disabled type='text' name='patient_name' id='patient_name'
-                                                class='form-control @error('patient_name') is-invalid @enderror'
-                                                value='{{ $item->patient_name ?? old('patient_name') }}'>
-                                            @error('patient_name')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='remarks' class='mb-1'>Keterangan</label>
+                                        <input disabled type='text' name='remarks' id='remarks'
+                                            class='form-control @error('remarks') is-invalid @enderror'
+                                            value='{{ $item->remarks ?? old('remarks') }}'>
+                                        @error('remarks')
+                                            <div class='invalid-feedback'>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='patient_name' class='mb-1'>Status Pasien</label>
-                                            <input disabled type='text' name='patient_name' id='patient_name'
-                                                class='form-control @error('patient_name') is-invalid @enderror'
-                                                value='{{ $item->patient_status ?? old('patient_name') }}'>
-                                            @error('patient_name')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='glasses_price' class='mb-1'>Kacamata</label>
-                                            <input disabled type='number' name='glasses_price' id='glasses_price'
-                                                class='form-control @error('glasses_price') is-invalid @enderror'
-                                                value='{{ $item->glasses_price ?? old('glasses_price') }}'>
-                                            @error('glasses_price')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='remarks' class='mb-1'>Keterangan</label>
-                                            <input disabled type='text' name='remarks' id='remarks'
-                                                class='form-control @error('remarks') is-invalid @enderror'
-                                                value='{{ $item->remarks ?? old('remarks') }}'>
-                                            @error('remarks')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 col-12 mb-3">
-                                        <div class='form-group'>
-                                            <label for='remarks' class='mb-1'>Total</label>
-                                            <input disabled type='text' name='remarks' id='remarks'
-                                                class='form-control @error('remarks') is-invalid @enderror'
-                                                value='Rp. {{ number_format($item->nominal_total, 0, '.', '.') }}'>
-                                            @error('remarks')
-                                                <div class='invalid-feedback'>
-                                                    {{ $message }}
-                                                </div>
-                                            @enderror
-                                        </div>
+                                </div>
+                                <div class="col-md-4 col-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='remarks' class='mb-1'>Total</label>
+                                        <input disabled type='text' name='remarks' id='remarks'
+                                            class='form-control @error('remarks') is-invalid @enderror'
+                                            value='Rp. {{ number_format($item->nominal_total, 0, '.', '.') }}'>
+                                        @error('remarks')
+                                            <div class='invalid-feedback'>
+                                                {{ $message }}
+                                            </div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <hr>
-
                     </div>
+                    <hr>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <div class="card-header pb-0 d-flex gap-2">
+                    <h4>Detail</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th rowspan="2" class="text-center align-middle">Nama Pasien</th>
+                                <th rowspan="2" class="text-center align-middle">Status Pasien</th>
+                                <th rowspan="2" class="text-center align-middle">Pengobatan</th>
+                                <th colspan="2" class="text-center">Perawatan 1</th>
+                                <th colspan="2" class="text-center">Perawatan 2</th>
+                                <th rowspan="2" class="text-center align-middle">Kacamata</th>
+                                <th rowspan="2" class="text-center align-middle">Total</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center">Jenis</th>
+                                <th class="text-center">Biaya</th>
+                                <th class="text-center">Jenis</th>
+                                <th class="text-center">Biaya</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($item->details as $detail)
+                                <tr>
+                                    <td>{{ $detail->patient_name }}</td>
+                                    <td>{{ $detail->patient_status }}</td>
+                                    <td class="text-end">RP.
+                                        {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>
+                                    <td>{{ $detail->care_type1 ?? '-' }}</td>
+                                    <td class="text-end">RP.
+                                        {{ number_format($detail->cost_care1, 0, ',', '.') }}
+                                    </td>
+                                    <td>{{ $detail->care_type2 ?? '-' }}</td>
+                                    <td class="text-end">RP.
+                                        {{ number_format($detail->cost_care2, 0, ',', '.') }}
+                                    </td>
+                                    <td class="text-end">RP.
+                                        {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
+                                    <td class="text-end">RP.
+                                        {{ number_format($detail->nominal_total, 0, ',', '.') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <th colspan="8" class="text-end">Total</th>
+                                <th class="text-end">Rp.
+                                    {{ number_format($item->details->sum('nominal_total'), 0, ',', '.') }}
+                                </th>
+                            </tr>
+                        </tfoot>
+                    </table>
                 </div>
             </div>
         </div>
@@ -164,12 +170,12 @@
                     <h4>Files</h4>
                 </div>
                 <div class="card-body row">
-                    @foreach ($item->ehayFiles as $file)
+                    @foreach ($item->files as $file)
                         @php
                             $extension = pathinfo($file->file, PATHINFO_EXTENSION);
                         @endphp
                         @if ($extension == 'pdf')
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <a href="javascript:void(0)" class="file"
                                     data-url={{ asset('storage/' . $file->file) }}>
                                     <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
@@ -177,7 +183,7 @@
                                 </a>
                             </div>
                         @else
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <a href="javascript:void(0)" class="file"
                                     data-url={{ asset('storage/' . $file->file) }}>
                                     <img src="{{ asset('storage/' . $file->file) }}" alt="File" class="img-fluid">
@@ -191,65 +197,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-header pb-0 d-flex gap-2">
-                    <h4>Pengobatan</h4>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th>No.</th>
-                            <th>Nama</th>
-                            <th>Nominal</th>
-                        </tr>
-                        @foreach ($item->ehayCares as $care)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $care->name }}</td>
-                                <td>Rp. {{ number_format($care->price, 0, ',', '.') }}</td>
-                            </tr>
-                        @endforeach
-                        <tr>
-                            <th colspan="2">Total</th>
-                            <th>Rp. {{ number_format($item->ehayCares()->sum('price'), 0, ',', '.') }}
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card">
-                <div class="card-header pb-0 d-flex gap-2">
-                    <h4>Perawatan</h4>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <tr>
-                            <th>No.</th>
-                            <th>Nama</th>
-                            <th>Nominal</th>
-                        </tr>
-                        @foreach ($item->ehayTreatments as $treatment)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $treatment->name }}</td>
-                                <td>Rp. {{ number_format($treatment->price, 0, ',', '.') }}</td>
-                            </tr>
-                        @endforeach
-                        <tr>
-                            <th colspan="2">Total</th>
-                            <th>Rp.
-                                {{ number_format($item->ehayTreatments()->sum('price'), 0, ',', '.') }}
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Modal -->
@@ -309,6 +257,43 @@
             </form>
         </div>
     </div>
+
+     <!-- Modal -->
+     <div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Approve</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" id="formApprove" method="post">
+                    <div class="modal-body">
+                        @csrf
+
+                        <div class='form-group mb-3'>
+                            <label for='total' class='mb-2'>Nominal Total</label>
+                            <input type='text' name='total' id='total' disabled
+                                class='form-control @error('total') is-invalid @enderror'>
+                        </div>
+                        <div class='form-group mb-3'>
+                            <label for='nominal' class='mb-2'>Nominal Disetujui</label>
+                            <input type='text' name='nominal' id='nominal'
+                                class='form-control @error('nominal') is-invalid @enderror nominal'>
+                            @error('nominal')
+                                <div class='invalid-feedback'>
+                                    {{ $message }}
+                                </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Approve Claim</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('page-script')
     <script>
@@ -333,6 +318,29 @@
                 $('#formValidation').attr('action', 'javascript:void(0)');
                 $('#formReject').attr('action', action);
                 $('#modalReject').modal('show');
+            })
+
+            function formatRupiah(angka) {
+                let reverse = angka.toString().split('').reverse().join('');
+                let ribuan = reverse.match(/\d{1,3}/g);
+                return ribuan.join('.').split('').reverse().join('');
+            }
+
+            $('.btnApprove').on('click', function() {
+                let nominal = '{{ $item->nominal_total }}';
+                let uuid = '{{ $item->uuid }}';
+                let route = '{{ route('ehay.approve', ['uuid' => ':uuid']) }}';
+                route = route.replace(':uuid', uuid);
+                $('#formApprove').attr('action', route);
+                $('#total').val(formatRupiah(nominal));
+                $('#nominal').val(formatRupiah(nominal));
+                $('#modalApprove').modal('show');
+            });
+
+            $('.nominal').on('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                value = new Intl.NumberFormat('id-ID').format(value);
+                this.value = value;
             })
         })
     </script>

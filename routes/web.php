@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('/', [AuthController::class, 'index'])->name('login');
 Route::post('/auth', [AuthController::class, 'auth'])->name('auth');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -139,7 +140,6 @@ Route::middleware('auth')->group(function () {
             Route::get('report', 'index')->name('report');
             Route::get('report/export', 'export')->name('report.export');
         });
-
     });
 
     // Route Ehay
@@ -169,8 +169,8 @@ Route::middleware('auth')->group(function () {
             });
 
             // ehay admin claim
-            Route::middleware(['is_role:1,4'])->group(function () {
-                Route::post('ehay/{id}/approve', [EhayController::class, 'approve'])->name('ehay.approve')->middleware('is_role:4');
+            Route::middleware(['is_role:1,4,5'])->group(function () {
+                Route::post('ehay/{uuid}/approve', [EhayController::class, 'approve'])->name('ehay.approve')->middleware('is_role:4,5');
                 Route::get('ehay/list', 'list')->name('ehay.list');
                 Route::get('ehay/status', 'status')->name('ehay.status');
                 Route::get('ehay/history', 'history')->name('ehay.history');
@@ -182,7 +182,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('ehay/get-by-id', 'getByIdJson')->name('ehay.getByIdJson');
         Route::get('ehay/{id}', 'show')->name('ehay.show');
-
     });
 
     Route::middleware(['auth', 'is_role:3'])->group(function () {

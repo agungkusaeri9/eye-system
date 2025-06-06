@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 
 class EhayController extends Controller
 {
@@ -29,8 +33,8 @@ class EhayController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->rawColumns(['action', 'checkbox'])
-                ->addColumn('description', function ($model) {
-                    return $model->getDescription();
+                ->addColumn('employee', function ($model) {
+                    return $model->employee->nrp . ' - ' . $model->employee->name;
                 })
                 ->addColumn('current_log_status', function ($model) {
                     return $model->currentLogStatus();
@@ -59,84 +63,114 @@ class EhayController extends Controller
         $method = 'POST';
         $action = route('ehay.store');
         $employees = Employee::orderBy('name')->get();
-        $patient_statuses = Family::where('employee_id', auth()->user()->employee->id)->get();
-        return view('pages.ehay.form', compact('title', 'ehay', 'method', 'action', 'employees', 'patient_statuses'));
+        return view('pages.ehay.form', compact('title', 'ehay', 'method', 'action', 'employees'));
     }
 
-    public function store()
+    public function store(Request $request)
     {
-        request()->validate([
-            'glasses_price' => ['nullable', 'numeric'],
-            'remarks' => ['nullable', 'string'],
-            'file.*' => ['file', 'mimes:png,jpg,jpeg,pdf', 'max:5120'],
-            'file' => ['required', 'array'],
-            'patient_name' => ['required'],
-            'patient_status' => ['required']
+        $validator = Validator::make($request->all(), [
+            'patient_name' => 'required|array',
+            'patient_name.*' => 'required|string',
+            'patient_status' => 'required|array',
+            'patient_status.*' => 'required|string',
+            'cost_treatment' => 'nullable|array',
+            'cost_treatment.*' => 'nullable|numeric',
+            'care_type1' => 'nullable|array',
+            'care_type1.*' => 'nullable|string',
+            'cost_care1' => 'nullable|array',
+            'cost_care1.*' => 'nullable|numeric',
+            'care_type2' => 'nullable|array',
+            'care_type2.*' => 'nullable|string',
+            'cost_care2' => 'nullable|array',
+            'cost_care2.*' => 'nullable|numeric',
+            'cost_glasses' => 'nullable|array',
+            'cost_glasses.*' => 'nullable|numeric',
+            'remarks' => 'nullable|string',
+            'file.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        DB::beginTransaction();
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // cek claim
+        $ceckClaim = Ehay::where('employee_id', auth()->user()->employee->id)->whereNotIn('status', [0, 5])->count();
+        if ($ceckClaim >= 1) {
+            return redirect()->back()->with('error', 'Anda sudah memiliki claim yang belum disetujui');
+        }
+
         try {
-            $data = request()->only(['employee_id', 'patient_name', 'patient_status', 'glasses_price', 'remarks']);
+            DB::beginTransaction();
 
-            // cek claim
-            $cek = Ehay::where('employee_id', auth()->user()->employee->id)->whereNotIn('status', [0, 5])->count();
-            if ($cek > 0) {
-                return back()->with('error', 'Mohon tunggu proses sebelumnya selesai');
-            }
+            // Create main claim record
+            $claim = Ehay::create([
+                'employee_id' => auth()->user()->employee->id,
+                'remarks' => $request->remarks
+            ]);
 
-            $data['code'] = Ehay::generateCode();
-            $data['employee_id'] = auth()->user()->employee->id;
-            $care_price = request('care_price');
-            $treatment_name = request('treatment_name');
-            $treatment_price = request('treatment_price');
+            // Process each patient's data
+            foreach ($request->patient_name as $index => $patientName) {
+                $totalNominal = 0;
 
-            // cekpengobatan/perawatan
-            if (empty(array_filter((array) $care_price)) && empty(array_filter((array) $treatment_price))) {
-                return back()->with('error', 'Mohon isi pengobatan/perawatan');
-            }
+                // Add treatment cost if exists
+                if (isset($request->cost_treatment[$index])) {
+                    $totalNominal += $request->cost_treatment[$index];
+                }
 
-            $ehay = Ehay::create($data);
+                // Add care1 cost if exists
+                if (isset($request->cost_care1[$index])) {
+                    $totalNominal += $request->cost_care1[$index];
+                }
 
+                // Add care2 cost if exists
+                if (isset($request->cost_care2[$index])) {
+                    $totalNominal += $request->cost_care2[$index];
+                }
 
-            $nominal_care = $care_price ?? 0;
-            if (isset($care_price)) {
-                $ehay->ehayCares()->create([
-                    'name' => null,
-                    'price' => $care_price ?? 0,
+                // Add glasses cost if exists
+                if (isset($request->cost_glasses[$index])) {
+                    $totalNominal += $request->cost_glasses[$index];
+                }
+
+                // Create detail record
+                $claim->details()->create([
+                    'patient_name' => $patientName,
+                    'patient_status' => $request->patient_status[$index],
+                    'cost_treatment' => $request->cost_treatment[$index] ?? 0,
+                    'care_type1' => $request->care_type1[$index] ?? null,
+                    'cost_care1' => $request->cost_care1[$index] ?? 0,
+                    'care_type2' => $request->care_type2[$index] ?? null,
+                    'cost_care2' => $request->cost_care2[$index] ?? 0,
+                    'cost_glasses' => $request->cost_glasses[$index] ?? 0,
+                    'nominal_total' => $totalNominal
                 ]);
             }
 
-            $nominal_treatment = 0;
-            if (isset($treatment_name)) {
-                foreach ($treatment_name as $key => $value) {
-                    if ($value) {
-                        $nominal_treatment += $treatment_price[$key];
-                        $ehay->ehayTreatments()->create([
-                            'name' => $value,
-                            'price' => $treatment_price[$key] ?? 0,
-                        ]);
-                    }
-                }
-            }
+            $claim->update([
+                'nominal_total' => $claim->details->sum('nominal_total'),
+                'status' => 1
+            ]);
 
-            if (request()->file('file')) {
-                foreach (request()->file('file') as $file) {
-                    $ehay->ehayFiles()->create([
+            // Handle file uploads
+            if ($request->hasFile('file')) {
+                foreach ($request->file('file') as $file) {
+                    $claim->files()->create([
                         'file' => $file->store('ehay-files', 'public')
                     ]);
                 }
             }
 
-            $ehay->update([
-                'nominal_total' => $nominal_care + $nominal_treatment
-            ]);
-
             DB::commit();
-            return redirect()->route('ehay.customer-list')->with('success', 'Pengjuan berhasil dibuat. Mohon menunggu proses validasi');
-        } catch (\Throwable $th) {
-            // dd($th);
-            DB::rollBack();
-            return back()->with('error', $th->getMessage());
+
+            return redirect()->route('ehay.customer-list')
+                ->with('success', 'Klaim berhasil diajukan');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
         }
     }
 
@@ -150,8 +184,8 @@ class EhayController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->rawColumns(['action', 'current_log_status'])
-                ->addColumn('description', function ($model) {
-                    return $model->getDescription();
+                ->addColumn('employee', function ($model) {
+                    return $model->employee->nrp . ' - ' . $model->employee->name;
                 })
                 ->addColumn('current_log_status', function ($model) {
                     return $model->currentLogStatus();
@@ -185,6 +219,7 @@ class EhayController extends Controller
         request()->validate([
             'notes' => [Rule::when(request('btn') == 0, 'required')],
         ]);
+        // dd(request()->all());
         $item = Ehay::with(['employee.department'])->where('uuid', $uuid)->firstOrFail();
         try {
             $data = request()->only(['notes']);
@@ -223,7 +258,6 @@ class EhayController extends Controller
                     ]);
                 }
                 return redirect()->route('ehay.status')->with('success', 'Data berhasil disimpan');
-
             } else if (auth()->user()->role == 5) {
                 if (request('btn') == 0) {
                     // reject
@@ -246,9 +280,7 @@ class EhayController extends Controller
                 }
 
                 return redirect()->route('ehay.index')->with('success', 'Data berhasil disimpan');
-
             }
-
         } catch (\Throwable $th) {
             //throw $th;
             return back()->with('error', $th->getMessage());
@@ -292,8 +324,8 @@ class EhayController extends Controller
 
             return DataTables::of($data)
                 ->addIndexColumn()
-                ->addColumn('description', function ($model) {
-                    return $model->getDescription();
+                ->addColumn('employee', function ($model) {
+                    return $model->employee->nrp . ' - ' . $model->employee->name;
                 })
                 ->addColumn('action', function ($row) {
                     $btn = '<a href="' . route('ehay.show', $row->uuid) . '" class="btn btn-sm btn-warning me-1">Detail</a>';
@@ -302,7 +334,7 @@ class EhayController extends Controller
                 ->editColumn('created_at', function ($model) {
                     return $model->created_at->translatedFormat('d/m/Y');
                 })
-                ->rawColumns(['action', 'checkbox'])
+                ->rawColumns(['action', 'checkbox', 'employee'])
                 ->make(true);
         }
 
@@ -320,8 +352,8 @@ class EhayController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->rawColumns(['action', 'checkbox', 'current_log_status'])
-                ->addColumn('description', function ($model) {
-                    return $model->getDescription() ?? '-';
+                ->addColumn('employee', function ($model) {
+                    return $model->employee->nrp . ' - ' . $model->employee->name;
                 })
                 ->addColumn('current_log_status', function ($model) {
                     if ($model->status == 2) {
@@ -336,7 +368,6 @@ class EhayController extends Controller
                         $btn = '<a href="' . route('ehay.show', $row->uuid) . '" class="btn btn-sm btn-warning me-1">Detail</a><a href="' . route('ehay.edit', $row->uuid) . '" class="btn btn-sm btn-info me-1">Edit</a>';
                     } else {
                         $btn = '<a href="' . route('ehay.show', $row->uuid) . '" class="btn btn-sm btn-warning me-1">Detail</a>';
-
                     }
 
                     return $btn;
@@ -365,9 +396,9 @@ class EhayController extends Controller
         try {
             $data = request()->only(['notes']);
             if (request()->file('file')) {
-                $item->ehayFiles()->delete();
+                $item->files()->delete();
                 foreach (request()->file('file') as $file) {
-                    $item->ehayFiles()->create([
+                    $item->files()->create([
                         'file' => $file->store('ehay', 'public')
                     ]);
                 }
@@ -417,7 +448,7 @@ class EhayController extends Controller
     {
         if (request()->ajax()) {
             $uuid = request('id');
-            $item = Ehay::with(['ehayCares', 'ehayTreatments'])->where('uuid', $uuid)->firstOrFail();
+            $item = Ehay::with(['files'])->where('uuid', $uuid)->firstOrFail();
             return response()->json($item);
         }
     }
@@ -448,8 +479,7 @@ class EhayController extends Controller
 
 
         $fileName = 'laporan-klaim-pengobatan-dan-perawatan-' . date('d-m-Y') . '.pdf';
-        $data_ehay = Ehay::where('status', 5)->with(['employee', 'ehayCares', 'ehayTreatments'])->withSum('ehayCares', 'price')
-            ->withSum('ehayTreatments', 'price')->latest();
+        $data_ehay = Ehay::where('status', 5)->with(['files'])->latest();
 
         if (empty($from_date) && empty($to_date)) {
             return redirect()->back()->with('error', 'Pilih salah satu antara From Date dan To Date');
@@ -467,10 +497,16 @@ class EhayController extends Controller
         }
 
         $data = $data_ehay->get();
+        if ($from_date && $to_date) {
+            $date = Carbon::parse($from_date)->translatedFormat('d-m-Y') . ' - ' . Carbon::parse($to_date)->translatedFormat('d-m-Y');
+        } else {
+            $date = Carbon::parse($from_date)->translatedFormat('d-m-Y');
+        }
 
         $pdf = Pdf::loadView('pages.ehay.export-pdf', [
             'items' => $data,
-            'files' => $files
+            'files' => $files,
+            'date' => $date
         ]);
         return $pdf->download($fileName);
     }
@@ -484,7 +520,7 @@ class EhayController extends Controller
 
     public function show($uuid)
     {
-        $item = Ehay::with(['employee', 'ehayCares', 'ehayTreatments'])->where('uuid', $uuid)->firstOrFail();
+        $item = Ehay::with(['files'])->where('uuid', $uuid)->firstOrFail();
         $title = 'Detail Data';
         return view('pages.ehay.show', compact('title', 'item'));
     }
@@ -520,4 +556,3 @@ class EhayController extends Controller
         return redirect()->back()->with('success', 'Data berhasil disetujui.');
     }
 }
-
