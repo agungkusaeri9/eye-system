@@ -9,7 +9,7 @@ use App\Models\EhayFile;
 use App\Models\Employee;
 use App\Models\Family;
 use Barryvdh\DomPDF\Facade\Pdf;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -85,8 +85,9 @@ class EhayController extends Controller
             'cost_care2.*' => 'nullable|numeric',
             'cost_glasses' => 'nullable|array',
             'cost_glasses.*' => 'nullable|numeric',
-            'remarks' => 'nullable|string',
-            'file.*' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'keterangan' => 'nullable|array',
+            'keterangan.*' => 'nullable|string',
+            'file_detail.*' => 'nullable|file|image|mimes:jpeg,png|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -134,6 +135,13 @@ class EhayController extends Controller
                     $totalNominal += $request->cost_glasses[$index];
                 }
 
+                // Handle file upload if exists
+                $filePath = null;
+                if ($request->hasFile("file_detail.{$index}")) {
+                    $file = $request->file("file_detail.{$index}");
+                    $filePath = $file->store('ehay-files', 'public');
+                }
+
                 // Create detail record
                 $claim->details()->create([
                     'patient_name' => $patientName,
@@ -144,7 +152,9 @@ class EhayController extends Controller
                     'care_type2' => $request->care_type2[$index] ?? null,
                     'cost_care2' => $request->cost_care2[$index] ?? 0,
                     'cost_glasses' => $request->cost_glasses[$index] ?? 0,
-                    'nominal_total' => $totalNominal
+                    'nominal_total' => $totalNominal,
+                    'keterangan' => $request->keterangan[$index] ?? null,
+                    'file' => $filePath
                 ]);
             }
 
@@ -152,15 +162,6 @@ class EhayController extends Controller
                 'nominal_total' => $claim->details->sum('nominal_total'),
                 'status' => 1
             ]);
-
-            // Handle file uploads
-            if ($request->hasFile('file')) {
-                foreach ($request->file('file') as $file) {
-                    $claim->files()->create([
-                        'file' => $file->store('ehay-files', 'public')
-                    ]);
-                }
-            }
 
             DB::commit();
 

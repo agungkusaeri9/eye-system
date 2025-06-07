@@ -198,43 +198,31 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Keterangan dan Lampiran -->
+                                        <div class="mb-3">
+                                            <h6 class="mb-2">Keterangan dan Lampiran</h6>
+                                            <div class="row">
+                                                <div class="col-md-12 col-sm-12 mb-3">
+                                                    <div class='form-group'>
+                                                        <label for='keterangan' class='mb-1'>Keterangan</label>
+                                                        <input type='text' name='keterangan[]' id='keterangan'
+                                                            class='form-control'
+                                                            placeholder="Masukkan keterangan">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12 col-sm-12 mb-3">
+                                                    <div class='form-group'>
+                                                        <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
+                                                        <input type='file' name='file_detail[]' id='file'
+                                                            class='form-control' accept="image/jpeg,image/png">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="col-md-12 col-sm-12 mb-3">
-                                <div class='form-group'>
-                                    <label for='remarks' class='mb-1'>Keterangan</label>
-                                    <input type='text' name='remarks' id='remarks'
-                                        class='form-control @error('remarks') is-invalid @enderror'
-                                        value='{{ old('remarks') }}'>
-                                    @error('remarks')
-                                        <div class='invalid-feedback'>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-12 col-sm-12 mb-3">
-                                <div class='form-group'>
-                                    <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
-                                    <div class="input-group">
-                                        <input type='file' name='file[]' id='file' multiple
-                                            class='form-control @error('file') is-invalid @enderror'>
-                                        <button class="btn btn-outline-primary" type="button" id="add-more-files">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                    <div id="file-preview-container" class="mt-2 row"></div>
-                                    @error('file')
-                                        <div class='invalid-feedback'>
-                                            {{ $message }}
-                                        </div>
-                                    @enderror
-                                </div>
-                            </div>
-
                             <div class="float-right">
                                 <button class="btn btn-primary mt-2" type="submit">
                                     <i class="fa fa-save me-2"></i>
@@ -476,6 +464,27 @@
                                             <input type='number' name='cost_glasses[${groupIndex}]' id='cost_glasses_${groupIndex}'
                                                 class='form-control' placeholder="Masukkan biaya kacamata">
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Keterangan dan Lampiran -->
+                        <div class="mb-3">
+                            <h6 class="mb-2">Keterangan dan Lampiran</h6>
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='keterangan_${groupIndex}'>Keterangan</label>
+                                        <input type='text' name='keterangan[${groupIndex}]' id='keterangan_${groupIndex}'
+                                            class='form-control' placeholder="Masukkan keterangan">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='file_detail_${groupIndex}'>Lampiran (JPG,PNG)</label>
+                                        <input type='file' name='file_detail[${groupIndex}]' id='file_detail_${groupIndex}'
+                                            class='form-control' accept="image/jpeg,image/png">
                                     </div>
                                 </div>
                             </div>
