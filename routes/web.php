@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DetailEhayController;
 use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\EhayController;
 use App\Http\Controllers\FamilyController;
@@ -182,6 +183,12 @@ Route::middleware('auth')->group(function () {
 
         Route::get('ehay/get-by-id', 'getByIdJson')->name('ehay.getByIdJson');
         Route::get('ehay/{id}', 'show')->name('ehay.show');
+
+    });
+
+
+    Route::controller(DetailEhayController::class)->group(function () {
+        Route::get('ehay-detail/{id}/edit', 'edit')->name('ehay-detail.edit');
     });
 
     Route::middleware(['auth', 'is_role:3'])->group(function () {
