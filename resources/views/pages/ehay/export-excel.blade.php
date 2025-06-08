@@ -143,7 +143,7 @@
         @endforeach
         @if ($status === 'ready')
             <tr>
-                <td colspan="11" style="text-align:center;vertical-align:middle;font-weight:bold;">
+                <td colspan="12" style="text-align:center;vertical-align:middle;font-weight:bold;">
                     Total
                 </td>
                 <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($items->sum('nominal_approve'), 0, ',', '.') }}</td>
