@@ -18,6 +18,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\EhayDetail;
 use Carbon\Carbon;
 
 class EhayController extends Controller
@@ -387,24 +388,16 @@ class EhayController extends Controller
 
     public function update($uuid)
     {
-        request()->validate([
-            'notes' => ['nullable'],
-            'file.*' => ['file', 'mimes:png,jpg,jpeg,pdf', 'max:5120'],
-            'file' => ['nullable', 'array'],
-        ]);
+        // request()->validate([
+        //     'notes' => ['nullable'],
+        //     'file.*' => ['file', 'mimes:png,jpg,jpeg,pdf', 'max:5120'],
+        //     'file' => ['nullable', 'array'],
+        // ]);
 
-        $item = Ehay::where('uuid', $uuid)->firstOrFail();
+        $item = Ehay::with(['details'])->where('uuid', $uuid)->firstOrFail();
         try {
-            $data = request()->only(['notes']);
-            if (request()->file('file')) {
-                $item->files()->delete();
-                foreach (request()->file('file') as $file) {
-                    $item->files()->create([
-                        'file' => $file->store('ehay', 'public')
-                    ]);
-                }
-            }
             $data['status'] = 1;
+            $data['nominal_total'] = $item->details->sum('nominal_total');
             $item->update($data);
             $item->logStatus()->create([
                 'name' => 'Waiting for HCGS Admin Validation',
@@ -489,7 +482,7 @@ class EhayController extends Controller
         if ($data_ehay->count() == 0) {
             return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
-        $files = EhayFile::whereIn('ehay_id', $data_ehay->get()->pluck('id'))->get();
+        $files = EhayDetail::whereIn('ehay_id', $data_ehay->get()->pluck('id'))->get();
 
         if ($from_date && $to_date) {
             $data_ehay->whereDate('created_at', '>=', $from_date)->whereDate('created_at', '<=', $to_date);

@@ -183,12 +183,13 @@ Route::middleware('auth')->group(function () {
 
         Route::get('ehay/get-by-id', 'getByIdJson')->name('ehay.getByIdJson');
         Route::get('ehay/{id}', 'show')->name('ehay.show');
-
     });
 
 
     Route::controller(DetailEhayController::class)->group(function () {
         Route::get('ehay-detail/{id}/edit', 'edit')->name('ehay-detail.edit');
+        Route::patch('ehay-detail/{id}/edit', 'update')->name('ehay-detail.update');
+        Route::delete('ehay-detail/{id}/destroy', 'destroy')->name('ehay-detail.destroy');
     });
 
     Route::middleware(['auth', 'is_role:3'])->group(function () {

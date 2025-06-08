@@ -175,7 +175,7 @@
         <table>
             <thead>
                 <tr>
-                    <th colspan="7" style="text-align: center">KLAIM DEKLARASI PENGOBATAN PERAWATAN DAN KACAMATA</th>
+                    <th colspan="8" style="text-align: center">KLAIM DEKLARASI PENGOBATAN PERAWATAN DAN KACAMATA</th>
                 </tr>
                 <tr>
                     <th colspan="2" style="font-weight:normal;width:3px;border-right:0px solid black !important;"
@@ -192,71 +192,38 @@
                         ID
                         Rekap</th>
                     <th
-                        style="font-weight:normal;width:40px;text-align:left;border-right:1px solid black !important;border-left:0px solid black !important">
+                        style="font-weight:normal;width:40px;text-align:left;border-right:0px solid black !important;border-left:0px solid black !important">
                         :</th>
+                    <th style="font-weight:normal;width:40px;text-align:left;border-right:1px solid black !important;border-left:0px solid black !important">
+                        </th>
                 </tr>
                 <tr>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:40px">NO.</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px">NRP</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">NAMA KARYAWAN</th>
-                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">DEPARTMENT</th>
-                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:170px">NAMA PASIEN</th>
-                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px">STATUS PASIEN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">DEPARTMENT</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">PENGOBATAN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">PERAWATAN</th>
+                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">KACAMATA</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">TOTAL APPROVE</th>
                 </tr>
             </thead>
             <tbody>
-                @php 
-                $currentNumber = null; 
-                $no = 1;
-                $totalPengobatan = 0;
-                $totalPerawatan = 0;
-                $totalKacamata = 0;
-                $grandTotal = 0;
-            @endphp
     
             @foreach ($items as $item)
-                @php
-                    $isNewGroup = $currentNumber !== $item->code;
-                    if ($isNewGroup) {
-                        if ($currentNumber !== null) {
-                            // Reset totals for new group
-                            $totalPengobatan = 0;
-                            $totalPerawatan = 0;
-                            $totalKacamata = 0;
-                            $grandTotal = 0;
-                        }
-                        $currentNumber = $item->code;
-                    }
-                @endphp
-    
-                @foreach($item->details as $index => $detail)
-                    @php
-                        $totalPengobatan += $detail->cost_treatment;
-                        $totalPerawatan += ($detail->cost_care1 + $detail->cost_care2);
-                        $totalKacamata += $detail->cost_glasses;
-                        $grandTotal += $detail->nominal_total;
-                    @endphp
-    
-                    <tr class="{{ $index > 0 ? 'no-border-top' : '' }}">
-                        @if ($index === 0)
-                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $no }}</td>
-                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->nrp }}</td>
-                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->name }}</td>
-                            <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->department->name }}</td>
-                        @endif
-                        <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_name }}</td>
-                        <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_status }}</td>
-                        @if ($index === 0)
-                        <td style="text-align:right;vertical-align:middle;white-space:nowrap" rowspan="{{ count($item->details) }}">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
-                        @endif
-                    </tr>
-                @endforeach
-    
-                @php $no++; @endphp
+            <tr>
+                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $loop->iteration }}</td>
+                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->nrp }}</td>
+                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->name }}</td>
+                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->department->name }}</td>
+                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->details->sum('cost_treatment'), 0, ',', '.') }}</td>
+                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format(($item->details->sum('cost_care1') + $item->details->sum('cost_care2')), 0, ',', '.') }}</td>
+                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->details->sum('cost_glasses'), 0, ',', '.') }}</td>
+                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
+            </tr>
             @endforeach
             <tr>
-                <td colspan="6" style="text-align:center;vertical-align:middle;font-weight:bold;width:100%">TOTAL</td>
+                <td colspan="7" style="text-align:center;vertical-align:middle;font-weight:bold;width:100%">TOTAL</td>
                 <td style="text-align:right;vertical-align:middle;white-space:nowrap font-weight:bold">Rp. {{ number_format($items->sum('nominal_approve'), 0, ',', '.') }}</td>
             </tr>
             </tbody>

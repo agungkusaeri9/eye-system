@@ -125,14 +125,14 @@
                             <h4>Files</h4>
                         </div>
                         <div class="card-body row">
-                            @foreach ($item->files as $file)
+                            @foreach ($item->details as $detail)
                                 @php
-                                    $extension = pathinfo($file->file, PATHINFO_EXTENSION);
+                                    $extension = pathinfo($detail->file, PATHINFO_EXTENSION);
                                 @endphp
                                 @if ($extension == 'pdf')
                                     <div class="col-md-3">
                                         <a href="javascript:void(0)" class="file"
-                                            data-url={{ asset('storage/' . $file->file) }}>
+                                            data-url={{ asset('storage/' . $detail->file) }}>
                                             <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
                                                 class="img-fluid w-full" style="height:80px">
                                         </a>
@@ -140,8 +140,8 @@
                                 @else
                                     <div class="col-md-3">
                                         <a href="javascript:void(0)" class="file"
-                                            data-url={{ asset('storage/' . $file->file) }}>
-                                            <img src="{{ asset('storage/' . $file->file) }}" alt="File"
+                                            data-url={{ asset('storage/' . $detail->file) }}>
+                                            <img src="{{ asset('storage/' . $detail->file) }}" alt="File"
                                                 class="img-fluid">
                                         </a>
                                     </div>

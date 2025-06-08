@@ -108,12 +108,17 @@
                                                         <td class="text-end">RP.
                                                             {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
                                                         <td class="text-end">
-                                                            <button class="btn btn-sm btn-secondary">Lihat</button>
+                                                            <button class="btn btn-sm btn-secondary file" data-url="{{ asset('storage/' . $detail->file) }}">Lihat</button>
                                                         </td>
                                                         <td>
-                                                            <a href="{{ route('ehay-detail.edit', $detail->id) }}"
+                                                            <a href="{{ route('ehay-detail.edit', $detail->uuid) }}"
                                                                 class="btn btn-info btn-sm">Edit</a>
-                                                            <button class="btn btn-sm btn-danger">Hapus</button>
+                                                            <form action="{{ route('ehay-detail.destroy', $detail->uuid) }}"
+                                                                method="POST" class="d-inline">
+                                                                @method('DELETE')
+                                                                @csrf
+                                                                <button class="btn btn-sm btn-danger">Hapus</button>
+                                                            </form>
                                                         </td>
                                                     </tr>
                                                 @endforeach

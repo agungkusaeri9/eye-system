@@ -170,7 +170,7 @@
                     <h4>Files</h4>
                 </div>
                 <div class="card-body row">
-                    @foreach ($item->files as $file)
+                    @foreach ($item->details as $file)
                         @php
                             $extension = pathinfo($file->file, PATHINFO_EXTENSION);
                         @endphp

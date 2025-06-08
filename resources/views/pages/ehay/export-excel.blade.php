@@ -34,7 +34,7 @@
 
     <table>
         <tr>
-            <td style="text-align:center;vertical-align:middle;font-weight:bold;width:100%" rowspan="2" colspan="{{ $status === 'ready' ? 12 : 12 }}">
+            <td style="text-align:center;vertical-align:middle;font-weight:bold;width:100%" rowspan="2" colspan="{{ $status === 'ready' ? 13 : 13 }}">
                 Laporan Klaim Pengobatan dan Perawatan
             </td>
         </tr>
@@ -49,6 +49,7 @@
             @endif
             <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:60px">NRP</th>
             <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:120px">Nama Karyawan</th>
+            <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:120px">Deskripsi</th>
             <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:120px">Nama Pasien</th>
             <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:80px">Status Pasien</th>
             <th style="text-align:center;vertical-align:middle;font-weight:bold;background-color:#f2f2f2;width:80px">Pengobatan</th>
@@ -105,6 +106,7 @@
                         <td style="text-align:center;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->nrp }}</td>
                         <td style="text-align:left;vertical-align:middle;word-wrap:break-word" rowspan="{{ count($item->details) }}">{{ $item->employee->name }}</td>
                     @endif
+                    <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->getDescription() }}</td>
                     <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_name }}</td>
                     <td style="text-align:left;vertical-align:middle;word-wrap:break-word">{{ $detail->patient_status }}</td>
                     <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>

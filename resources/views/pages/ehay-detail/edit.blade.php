@@ -4,7 +4,7 @@
         <span class="text-muted fw-light">Ehay /</span> Pengajuan
     </h4>
     <div class="row">
-        <form method="POST" enctype="multipart/form-data" action="">
+        <form method="POST" enctype="multipart/form-data" action="{{ route('ehay-detail.update', $detail->uuid) }}">
             @method('patch')
             @csrf
             <div class="col-12">
@@ -52,8 +52,9 @@
                                                 <label for='cost_treatment' class='mb-1'>Biaya Pengobatan</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">Rp</span>
-                                                    <input type='number' name='cost_treatment[]' id='cost_treatment'
-                                                        class='form-control' placeholder="Masukkan biaya pengobatan">
+                                                    <input type='number' name='cost_treatment' id='cost_treatment'
+                                                        class='form-control' placeholder="Masukkan biaya pengobatan"
+                                                        value="{{ $detail->cost_treatment }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -68,11 +69,11 @@
                                         <div class="col-md-6 col-sm-12 mb-3">
                                             <div class='form-group'>
                                                 <label for='care_type1' class="mb-1">Jenis Perawatan 1</label>
-                                                <select name='care_type1[]' id='care_type1' class='form-control'>
+                                                <select name='care_type1' id='care_type1' class='form-control'>
                                                     <option value='' selected disabled>Pilih Perawatan
                                                     </option>
-                                                    <option value="Rawat Inap">Rawat Inap</option>
-                                                    <option value="Rawat Jalan">Rawat Jalan</option>
+                                                    <option @selected($detail->care_type1 == 'Rawat Inap') value="Rawat Inap">Rawat Inap</option>
+                                                    <option @selected($detail->care_type1 == 'Rawat Jalan') value="Rawat Jalan">Rawat Jalan</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -81,8 +82,9 @@
                                                 <label for='cost_care1' class='mb-1'>Biaya Perawatan 1</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">Rp</span>
-                                                    <input type='number' name='cost_care1[]' id='cost_care1'
-                                                        class='form-control' placeholder="Masukkan biaya perawatan">
+                                                    <input type='number' name="cost_care1" id='cost_care1'
+                                                        class='form-control' placeholder="Masukkan biaya perawatan"
+                                                        value="{{ $detail->cost_care1 }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -90,11 +92,11 @@
                                         <div class="col-md-6 col-sm-12 mb-3">
                                             <div class='form-group'>
                                                 <label for='care_type2' class="mb-1">Jenis Perawatan 2</label>
-                                                <select name='care_type2[]' id='care_type2' class='form-control'>
+                                                <select name='care_type2' id='care_type2' class='form-control'>
                                                     <option value='' selected disabled>Pilih Perawatan
                                                     </option>
-                                                    <option value="Rawat Inap">Rawat Inap</option>
-                                                    <option value="Rawat Jalan">Rawat Jalan</option>
+                                                    <option @selected($detail->care_type2 == 'Rawat Inap') value="Rawat Inap">Rawat Inap</option>
+                                                    <option @selected($detail->care_type2 == 'Rawat Jalan') value="Rawat Jalan">Rawat Jalan</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -103,8 +105,9 @@
                                                 <label for='cost_care2' class='mb-1'>Biaya Perawatan 2</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">Rp</span>
-                                                    <input type='number' name='cost_care2[]' id='cost_care2'
-                                                        class='form-control' placeholder="Masukkan biaya perawatan">
+                                                    <input type='number' name='cost_care2' id='cost_care2'
+                                                        class='form-control' placeholder="Masukkan biaya perawatan"
+                                                        value="{{ $detail->cost_care2 }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -120,8 +123,8 @@
                                                 <label for='cost_glasses' class='mb-1'>Biaya Kacamata</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text">Rp</span>
-                                                    <input type='number' name='cost_glasses[]' id='cost_glasses'
-                                                        class='form-control' placeholder="Masukkan biaya kacamata">
+                                                    <input type='number' name='cost_glasses' id='cost_glasses'
+                                                        class='form-control' placeholder="Masukkan biaya kacamata" value="{{ $detail->cost_glasses }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -135,24 +138,31 @@
                                         <div class="col-md-12 col-sm-12 mb-3">
                                             <div class='form-group'>
                                                 <label for='keterangan' class='mb-1'>Keterangan</label>
-                                                <input type='text' name='keterangan[]' id='keterangan'
-                                                    class='form-control' placeholder="Masukkan keterangan">
+                                                <input type='text' name='keterangan' id='keterangan'
+                                                    class='form-control' placeholder="Masukkan keterangan" value="{{ $detail->keterangan }}">
                                             </div>
                                         </div>
                                         <div class="col-md-12 col-sm-12 mb-3">
                                             <div class='form-group'>
                                                 <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
-                                                <input type='file' name='file_detail[]' id='file'
+                                                <input type='file' name='file' id='file'
                                                     class='form-control' accept="image/jpeg,image/png">
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <img src="{{ asset('storage/' . $detail->file) }}" alt="Lampiran" class="img-fluid">
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                             <div class="float-right">
                                 <button class="btn btn-primary mt-2" type="submit">
                                     <i class="fa fa-save me-2"></i>
-                                    <span class="align-middle">Ajukan Sekarang</span>
+                                    <span class="align-middle">Simpan</span>
                                 </button>
                             </div>
                         </div>
