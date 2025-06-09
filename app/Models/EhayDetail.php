@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EhayDetail extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
     public function ehay()
     {
@@ -90,5 +90,10 @@ class EhayDetail extends Model
         }
 
         return str_pad($bulan, 2, '0', STR_PAD_LEFT) . substr($tahun, 2);
+    }
+
+    public function files()
+    {
+        return $this->hasMany(EhayFile::class, 'ehay_detail_id', 'id');
     }
 }

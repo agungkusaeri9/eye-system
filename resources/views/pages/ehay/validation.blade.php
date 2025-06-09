@@ -170,11 +170,12 @@
                     <h4>Files</h4>
                 </div>
                 <div class="card-body row">
-                    @foreach ($item->details as $file)
-                        @php
-                            $extension = pathinfo($file->file, PATHINFO_EXTENSION);
-                        @endphp
-                        @if ($extension == 'pdf')
+                    @foreach ($item->details as $detail)
+                        @foreach ($detail->files as $file)
+                            @php
+                                $extension = pathinfo($file->file, PATHINFO_EXTENSION);
+                            @endphp
+                            @if ($extension == 'pdf')
                             <div class="col-md-3">
                                 <a href="javascript:void(0)" class="file"
                                     data-url={{ asset('storage/' . $file->file) }}>
@@ -186,10 +187,12 @@
                             <div class="col-md-3">
                                 <a href="javascript:void(0)" class="file"
                                     data-url={{ asset('storage/' . $file->file) }}>
-                                    <img src="{{ asset('storage/' . $file->file) }}" alt="File" class="img-fluid">
-                                </a>
-                            </div>
-                        @endif
+                                    <img src="{{ asset('storage/' . $file->file) }}" alt="File"
+                                        class="img-fluid">
+                                    </a>
+                                </div>
+                            @endif
+                        @endforeach
                     @endforeach
                 </div>
             </div>

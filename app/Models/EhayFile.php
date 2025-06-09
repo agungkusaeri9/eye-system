@@ -10,4 +10,9 @@ class EhayFile extends Model
     use HasFactory;
     protected $table = 'ehay_files';
     protected $guarded = ['id'];
+
+    public function ehay_detail()
+    {
+        return $this->belongsTo(EhayDetail::class);
+    }
 }

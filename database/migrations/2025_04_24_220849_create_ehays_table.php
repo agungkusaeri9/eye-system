@@ -38,12 +38,12 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
         });
 
-        Schema::create('ehay_files', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('ehay_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
-            $table->string('file');
-            $table->timestamps();
-        });
+        // Schema::create('ehay_files', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('ehay_id')->constrained()->cascadeOnDelete()->cascadeOnUpdate();
+        //     $table->string('file');
+        //     $table->timestamps();
+        // });
 
         Schema::create('ehay_details', function (Blueprint $table) {
             $table->id();
@@ -74,7 +74,7 @@ return new class extends Migration {
         });
 
         Schema::dropIfExists('ehay_log_statuses');
-        Schema::dropIfExists('ehay_files');
+        // Schema::dropIfExists('ehay_files');
         Schema::dropIfExists('ehay_details');
         Schema::dropIfExists('ehays');
     }

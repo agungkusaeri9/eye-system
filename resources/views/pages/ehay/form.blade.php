@@ -211,13 +211,15 @@
                                                             placeholder="Masukkan keterangan">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12 col-sm-12 mb-3">
-                                                    <div class='form-group'>
-                                                        <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
-                                                        <input type='file' name='file_detail[]' id='file'
-                                                            class='form-control' accept="image/jpeg,image/png">
-                                                    </div>
-                                                </div>
+                                                                                <div class="col-md-12 col-sm-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
+                                        <input type='file' name='file_detail[0][]' id='file'
+                                            class='form-control' accept="image/jpeg,image/png" multiple>
+                                    </div>
+                                    <div id="file-preview-container-0" class="row mt-2">
+                                    </div>
+                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -263,13 +265,10 @@
             })
 
             // File upload and preview
-            $('#file').on('change', function(e) {
-                displayFiles(this.files);
-            });
-
-            // Display selected files
-            function displayFiles(files) {
-                $('#file-preview-container').empty();
+            function handleFileSelect(event, groupIndex) {
+                const files = event.target.files;
+                const previewContainer = $(`#file-preview-container-${groupIndex}`);
+                previewContainer.empty();
 
                 Array.from(files).forEach((file, index) => {
                     const reader = new FileReader();
@@ -286,19 +285,7 @@
                                         <img src="${event.target.result}" class="card-img-top" style="height: 120px; object-fit: cover;">
                                         <div class="card-body p-2">
                                             <p class="card-text small text-truncate">${fileName}</p>
-                                            <button type="button" class="btn btn-sm btn-danger remove-file" data-index="${index}">Hapus</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        } else if (fileType === 'application' || fileName.endsWith('.pdf')) {
-                            preview = `
-                                <div class="col-md-3 mb-2">
-                                    <div class="card">
-                                        <div class="card-body text-center p-2">
-                                            <i class="fas fa-file-pdf text-danger fa-3x mb-2"></i>
-                                            <p class="card-text small text-truncate">${fileName}</p>
-                                            <button type="button" class="btn btn-sm btn-danger remove-file" data-index="${index}">Hapus</button>
+                                            <button type="button" class="btn btn-sm btn-danger remove-file" data-group="${groupIndex}" data-index="${index}">Hapus</button>
                                         </div>
                                     </div>
                                 </div>
@@ -310,24 +297,34 @@
                                         <div class="card-body text-center p-2">
                                             <i class="fas fa-file text-secondary fa-3x mb-2"></i>
                                             <p class="card-text small text-truncate">${fileName}</p>
-                                            <button type="button" class="btn btn-sm btn-danger remove-file" data-index="${index}">Hapus</button>
+                                            <button type="button" class="btn btn-sm btn-danger remove-file" data-group="${groupIndex}" data-index="${index}">Hapus</button>
                                         </div>
                                     </div>
                                 </div>
                             `;
                         }
 
-                        $('#file-preview-container').append(preview);
+                        previewContainer.append(preview);
                     };
 
                     reader.readAsDataURL(file);
                 });
             }
 
+            // Handle all file inputs including dynamically added ones
+            $(document).on('change', '.file-input', function(e) {
+                const groupIndex = $(this).data('group');
+                handleFileSelect(e, groupIndex);
+            });
+
+            // Initial file input setup
+            $('#file').addClass('file-input').attr('data-group', '0');
+
             // Remove file from preview
             $(document).on('click', '.remove-file', function() {
                 const index = $(this).data('index');
-                const fileInput = document.getElementById('file');
+                const groupIndex = $(this).data('group');
+                const fileInput = $(`input[data-group="${groupIndex}"]`)[0];
 
                 if (fileInput.files && fileInput.files.length) {
                     const dt = new DataTransfer();
@@ -337,15 +334,10 @@
                         .forEach(file => dt.items.add(file));
 
                     fileInput.files = dt.files;
-                    displayFiles(fileInput.files);
+                    handleFileSelect({ target: fileInput }, groupIndex);
                 }
 
                 $(this).closest('.col-md-3').remove();
-            });
-
-            // Add more files button
-            $('#add-more-files').on('click', function() {
-                $('#file').click();
             });
 
             // Add Patient Group
@@ -483,8 +475,11 @@
                                 <div class="col-md-12 col-sm-12 mb-3">
                                     <div class='form-group'>
                                         <label for='file_detail_${groupIndex}'>Lampiran (JPG,PNG)</label>
-                                        <input type='file' name='file_detail[${groupIndex}]' id='file_detail_${groupIndex}'
-                                            class='form-control' accept="image/jpeg,image/png">
+                                        <input type='file' name='file_detail[${groupIndex}][]' id='file_detail_${groupIndex}'
+                                            class='form-control file-input' accept="image/jpeg,image/png" multiple 
+                                            data-group="${groupIndex}">
+                                    </div>
+                                    <div id="file-preview-container-${groupIndex}" class="row mt-2">
                                     </div>
                                 </div>
                             </div>

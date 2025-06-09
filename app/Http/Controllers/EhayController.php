@@ -88,7 +88,9 @@ class EhayController extends Controller
             'cost_glasses.*' => 'nullable|numeric',
             'keterangan' => 'nullable|array',
             'keterangan.*' => 'nullable|string',
-            'file_detail.*' => 'nullable|file|image|mimes:jpeg,png|max:2048'
+            'file_detail' => 'nullable|array',
+            'file_detail.*' => 'nullable|array',
+            'file_detail.*.*' => 'nullable|file|image|mimes:jpeg,png|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -136,15 +138,8 @@ class EhayController extends Controller
                     $totalNominal += $request->cost_glasses[$index];
                 }
 
-                // Handle file upload if exists
-                $filePath = null;
-                if ($request->hasFile("file_detail.{$index}")) {
-                    $file = $request->file("file_detail.{$index}");
-                    $filePath = $file->store('ehay-files', 'public');
-                }
-
                 // Create detail record
-                $claim->details()->create([
+                $detail = $claim->details()->create([
                     'patient_name' => $patientName,
                     'patient_status' => $request->patient_status[$index],
                     'cost_treatment' => $request->cost_treatment[$index] ?? 0,
@@ -153,22 +148,31 @@ class EhayController extends Controller
                     'care_type2' => $request->care_type2[$index] ?? null,
                     'cost_care2' => $request->cost_care2[$index] ?? 0,
                     'cost_glasses' => $request->cost_glasses[$index] ?? 0,
-                    'nominal_total' => $totalNominal,
                     'keterangan' => $request->keterangan[$index] ?? null,
-                    'file' => $filePath
+                    'nominal_total' => $totalNominal
                 ]);
+
+                // Handle multiple file uploads
+                if ($request->hasFile("file_detail.{$index}")) {
+                    foreach ($request->file("file_detail.{$index}") as $file) {
+                        $filePath = $file->store('ehay-files', 'public');
+
+                        // Create file record
+                        $detail->files()->create([
+                            'file' => $filePath
+                        ]);
+                    }
+                }
             }
 
             $claim->update([
-                'nominal_total' => $claim->details->sum('nominal_total'),
-                'status' => 1
+                'nominal_total' => $claim->details->sum('nominal_total')
             ]);
 
             DB::commit();
-
-            return redirect()->route('ehay.customer-list')
-                ->with('success', 'Klaim berhasil diajukan');
+            return redirect()->route('ehay.customer-list')->with('success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
+            dd($e->getMessage());
             DB::rollback();
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
@@ -473,7 +477,7 @@ class EhayController extends Controller
 
 
         $fileName = 'laporan-klaim-pengobatan-dan-perawatan-' . date('d-m-Y') . '.pdf';
-        $data_ehay = Ehay::where('status', 5)->with(['files'])->latest();
+        $data_ehay = Ehay::where('status', 5)->with(['details.files'])->latest();
 
         if (empty($from_date) && empty($to_date)) {
             return redirect()->back()->with('error', 'Pilih salah satu antara From Date dan To Date');
@@ -482,7 +486,10 @@ class EhayController extends Controller
         if ($data_ehay->count() == 0) {
             return redirect()->back()->with('error', 'Data tidak ditemukan');
         }
-        $files = EhayDetail::whereIn('ehay_id', $data_ehay->get()->pluck('id'))->get();
+        $files = EhayFile::whereHas('ehay_detail', function ($query) use ($data_ehay) {
+            $query->whereIn('ehay_id', $data_ehay->get()->pluck('id'));
+        })->get();
+
 
         if ($from_date && $to_date) {
             $data_ehay->whereDate('created_at', '>=', $from_date)->whereDate('created_at', '<=', $to_date);
@@ -514,7 +521,7 @@ class EhayController extends Controller
 
     public function show($uuid)
     {
-        $item = Ehay::with(['files'])->where('uuid', $uuid)->firstOrFail();
+        $item = Ehay::with(['details.files'])->where('uuid', $uuid)->firstOrFail();
         $title = 'Detail Data';
         return view('pages.ehay.show', compact('title', 'item'));
     }
