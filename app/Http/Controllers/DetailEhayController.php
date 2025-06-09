@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\EhayDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class DetailEhayController extends Controller
 {
     public function edit($uuid)
     {
-        $detail = EhayDetail::where('uuid', $uuid)->firstOrFail();
+        $detail = EhayDetail::with('files')->where('uuid', $uuid)->firstOrFail();
         $title = 'Edit Data Detail Ehay';
         return view('pages.ehay-detail.edit', compact('detail', 'title'));
     }
@@ -25,30 +26,72 @@ class DetailEhayController extends Controller
             'cost_care2' => 'nullable',
             'cost_glasses' => 'nullable',
             'keterangan' => 'nullable',
-            'file' => 'nullable|image|mimes:jpeg,png|max:2048',
+            'files.*' => 'nullable|image|mimes:jpeg,png|max:2048',
         ]);
 
-        $detail = EhayDetail::where('uuid', $uuid)->firstOrFail();
-        $data = request()->only(['cost_treatment', 'care_type1', 'cost_care1', 'care_type2', 'cost_care2', 'cost_glasses', 'keterangan']);
-        if ($request->hasFile('file')) {
-            if ($detail->file) {
-                Storage::disk('public')->delete($detail->file);
+        try {
+            DB::beginTransaction();
+
+            $detail = EhayDetail::where('uuid', $uuid)->firstOrFail();
+            $data = $request->only([
+                'cost_treatment',
+                'care_type1',
+                'cost_care1',
+                'care_type2',
+                'cost_care2',
+                'cost_glasses',
+                'keterangan'
+            ]);
+
+            // Handle multiple file uploads
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $filePath = $file->store('ehay-files', 'public');
+
+                    // Create file record
+                    $detail->files()->create([
+                        'file' => $filePath,
+                        'ehay_id' => $detail->ehay_id
+                    ]);
+                }
             }
-            $file = $request->file('file');
-            $data['file'] = $file->store('ehay-files', 'public');
+
+            $data['nominal_total'] =
+                ($detail->cost_treatment ?? 0) +
+                ($detail->cost_care1 ?? 0) +
+                ($detail->cost_care2 ?? 0) +
+                ($detail->cost_glasses ?? 0);
+
+            $detail->update($data);
+
+            DB::commit();
+            return redirect()
+                ->route('ehay.edit', $detail->ehay->uuid)
+                ->with('success', 'Data detail berhasil diubah');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
         }
-        $data['nominal_total'] = $detail->cost_treatment + $detail->cost_care1 + $detail->cost_care2 + $detail->cost_glasses;
-        $detail->update($data);
-        return redirect()->route('ehay.edit', $detail->ehay->uuid)->with('success', 'Data detail berhasil diubah');
     }
 
     public function destroy($uuid)
     {
         $detail = EhayDetail::where('uuid', $uuid)->firstOrFail();
-        if ($detail->file) {
-            Storage::disk('public')->delete($detail->file);
+
+        // Delete all associated files
+        foreach ($detail->files as $file) {
+            if ($file->file) {
+                Storage::disk('public')->delete($file->file);
+            }
+            $file->delete();
         }
+
         $detail->delete();
-        return redirect()->route('ehay.edit', $detail->ehay->uuid)->with('success', 'Data detail berhasil dihapus');
+        return redirect()
+            ->route('ehay.edit', $detail->ehay->uuid)
+            ->with('success', 'Data detail berhasil dihapus');
     }
 }

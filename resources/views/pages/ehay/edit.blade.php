@@ -89,7 +89,6 @@
                                                     <th class="text-center">Perawatan 1</th>
                                                     <th class="text-center">Perawatan 2</th>
                                                     <th class="text-center align-middle">Kacamata</th>
-                                                    <th class="text-center align-middle">Lampiran</th>
                                                     <th class="text-center align-middle">Action</th>
 
                                                 </tr>
@@ -107,9 +106,7 @@
                                                             {{ number_format($detail->cost_care1) }}</td>
                                                         <td class="text-end">RP.
                                                             {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
-                                                        <td class="text-end">
-                                                            <button class="btn btn-sm btn-secondary file" data-url="{{ asset('storage/' . $detail->file) }}">Lihat</button>
-                                                        </td>
+                                                    
                                                         <td>
                                                             <a href="{{ route('ehay-detail.edit', $detail->uuid) }}"
                                                                 class="btn btn-info btn-sm">Edit</a>

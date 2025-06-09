@@ -18,6 +18,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\WorkOrder1Controller;
 use App\Http\Controllers\WorkOrder2Controller;
+use App\Http\Controllers\EhayFileController;
 
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\SignController;
@@ -191,6 +192,9 @@ Route::middleware('auth')->group(function () {
         Route::patch('ehay-detail/{id}/edit', 'update')->name('ehay-detail.update');
         Route::delete('ehay-detail/{id}/destroy', 'destroy')->name('ehay-detail.destroy');
     });
+
+    // File routes
+    Route::delete('ehay-file/{id}', [EhayFileController::class, 'destroy'])->name('ehay-file.destroy');
 
     Route::middleware(['auth', 'is_role:3'])->group(function () {
         Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
