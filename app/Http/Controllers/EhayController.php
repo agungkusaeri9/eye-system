@@ -90,13 +90,39 @@ class EhayController extends Controller
             'keterangan.*' => 'nullable|string',
             'file_detail' => 'nullable|array',
             'file_detail.*' => 'nullable|array',
-            'file_detail.*.*' => 'nullable|file|image|mimes:jpeg,png|max:2048'
+            'file_detail.*.*' => 'nullable|file|image|mimes:jpeg,png|max:1024'
+        ], [
+            'file_detail.*.*.max' => 'Ukuran file tidak boleh lebih dari 1MB.',
+            'file_detail.*.*.mimes' => 'File harus berformat JPG atau PNG.',
+            'file_detail.*.*.image' => 'File harus berupa gambar.'
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
+        }
+
+        // Additional file size validation (in case frontend validation is bypassed)
+        if ($request->hasFile('file_detail')) {
+            foreach ($request->file('file_detail') as $groupIndex => $files) {
+                if (is_array($files)) {
+                    // Check file count limit
+                    if (count($files) > 5) {
+                        return redirect()->back()
+                            ->withErrors(['file_detail' => "Maksimal hanya boleh upload 5 file per data pasien."])
+                            ->withInput();
+                    }
+
+                    foreach ($files as $file) {
+                        if ($file && $file->getSize() > 1048576) { // 1MB in bytes
+                            return redirect()->back()
+                                ->withErrors(['file_detail' => "File {$file->getClientOriginalName()} terlalu besar. Maksimal ukuran file adalah 1MB."])
+                                ->withInput();
+                        }
+                    }
+                }
+            }
         }
 
         // cek claim
@@ -421,7 +447,7 @@ class EhayController extends Controller
         ]);
         $item = Ehay::where('uuid', $uuid)->firstOrFail();
         try {
-            $nominal = \Str::replace('.', '', request('nominal'));
+            $nominal = Str::replace('.', '', request('nominal'));
 
             if ($nominal > $item->nominal_total) {
                 return back()->with('error', 'Nominal Approve tidak boleh melebihi nominal total');

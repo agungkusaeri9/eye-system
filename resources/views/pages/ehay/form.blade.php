@@ -1,4 +1,9 @@
 @extends('layouts.master')
+
+@push('vendor-style')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+@endpush
+
 @section('content')
     <h4 class="fw-bold py-3 mb-34">
         <span class="text-muted fw-light">Ehay /</span> Pengajuan
@@ -211,11 +216,12 @@
                                                             placeholder="Masukkan keterangan">
                                                     </div>
                                                 </div>
-                                                                                <div class="col-md-12 col-sm-12 mb-3">
+                                <div class="col-md-12 col-sm-12 mb-3">
                                     <div class='form-group'>
-                                        <label for='file' class='mb-1'>Lampiran (JPG,PNG)</label>
+                                        <label for='file' class='mb-1'>Lampiran (JPG,PNG) - Maksimal 5 file, 1MB per file</label>
                                         <input type='file' name='file_detail[0][]' id='file'
-                                            class='form-control' accept="image/jpeg,image/png" multiple>
+                                            class='form-control' accept="image/jpeg,image/png" multiple 
+                                            data-max-size="1048576" data-max-files="5">
                                     </div>
                                     <div id="file-preview-container-0" class="row mt-2">
                                     </div>
@@ -240,6 +246,7 @@
 @endsection
 
 @section('page-script')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
     <script>
         $(function() {
             $('#family_id').on('change', function() {
@@ -268,9 +275,44 @@
             function handleFileSelect(event, groupIndex) {
                 const files = event.target.files;
                 const previewContainer = $(`#file-preview-container-${groupIndex}`);
+                const maxSize = 1048576; // 1MB in bytes
+                const maxFiles = 5;
                 previewContainer.empty();
 
-                Array.from(files).forEach((file, index) => {
+                // Check file count limit
+                if (files.length > maxFiles) {
+                    Swal.fire({
+                        title: 'Terlalu Banyak File',
+                        text: `Maksimal hanya boleh upload ${maxFiles} file. Anda memilih ${files.length} file.`,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    event.target.value = '';
+                    return;
+                }
+
+                // Filter out files that are too large
+                const validFiles = Array.from(files).filter(file => {
+                    if (file.size > maxSize) {
+                        Swal.fire({
+                            title: 'File Terlalu Besar',
+                            text: `File "${file.name}" terlalu besar. Maksimal ukuran file adalah 1MB.`,
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                        return false;
+                    }
+                    return true;
+                });
+
+                // Update the file input with only valid files
+                if (validFiles.length !== files.length) {
+                    const dt = new DataTransfer();
+                    validFiles.forEach(file => dt.items.add(file));
+                    event.target.files = dt.files;
+                }
+
+                validFiles.forEach((file, index) => {
                     const reader = new FileReader();
                     const fileType = file.type.split('/')[0];
                     const fileName = file.name;
@@ -285,6 +327,7 @@
                                         <img src="${event.target.result}" class="card-img-top" style="height: 120px; object-fit: cover;">
                                         <div class="card-body p-2">
                                             <p class="card-text small text-truncate">${fileName}</p>
+                                            <p class="card-text small text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                             <button type="button" class="btn btn-sm btn-danger remove-file" data-group="${groupIndex}" data-index="${index}">Hapus</button>
                                         </div>
                                     </div>
@@ -297,6 +340,7 @@
                                         <div class="card-body text-center p-2">
                                             <i class="fas fa-file text-secondary fa-3x mb-2"></i>
                                             <p class="card-text small text-truncate">${fileName}</p>
+                                            <p class="card-text small text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                             <button type="button" class="btn btn-sm btn-danger remove-file" data-group="${groupIndex}" data-index="${index}">Hapus</button>
                                         </div>
                                     </div>
@@ -474,10 +518,10 @@
                                 </div>
                                 <div class="col-md-12 col-sm-12 mb-3">
                                     <div class='form-group'>
-                                        <label for='file_detail_${groupIndex}'>Lampiran (JPG,PNG)</label>
+                                        <label for='file_detail_${groupIndex}'>Lampiran (JPG,PNG) - Maksimal 5 file, 1MB per file</label>
                                         <input type='file' name='file_detail[${groupIndex}][]' id='file_detail_${groupIndex}'
                                             class='form-control file-input' accept="image/jpeg,image/png" multiple 
-                                            data-group="${groupIndex}">
+                                            data-group="${groupIndex}" data-max-size="1048576" data-max-files="5">
                                     </div>
                                     <div id="file-preview-container-${groupIndex}" class="row mt-2">
                                     </div>

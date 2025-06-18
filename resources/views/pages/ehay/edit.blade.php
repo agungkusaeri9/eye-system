@@ -90,7 +90,6 @@
                                                     <th class="text-center">Perawatan 2</th>
                                                     <th class="text-center align-middle">Kacamata</th>
                                                     <th class="text-center align-middle">Action</th>
-
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -99,11 +98,11 @@
                                                         <td>{{ $detail->patient_name }}</td>
                                                         <td>{{ $detail->patient_status }}</td>
                                                         <td class="text-end">RP.
-                                                            {{ number_format($detail->cost_reatment, 0, ',', '.') }}</td>
+                                                            {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>
                                                         <td class="text-end">RP.
                                                             {{ number_format($detail->cost_care1) }}</td>
                                                         <td class="text-end">RP.
-                                                            {{ number_format($detail->cost_care1) }}</td>
+                                                            {{ number_format($detail->cost_care2) }}</td>
                                                         <td class="text-end">RP.
                                                             {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
                                                     

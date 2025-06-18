@@ -26,7 +26,7 @@
         <!-- Form Edit di Sebelah Kiri -->
         <div class="col-md-8">
             <div class="card">
-                <h5 class="card-header">Edit Detail Pasien</h5>
+                <h5 class="card-header">Edit Detail Pengobatan</h5>
                 <form method="POST" action="{{ route('ehay-detail.update', $detail->uuid) }}" enctype="multipart/form-data" id="mainForm">
                     @method('patch')
                     @csrf
@@ -34,38 +34,73 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
-                                    <h6 class="mb-2">Data Pasien dan Pengobatan</h6>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-12 mb-3">
                                             <div class='form-group'>
                                                 <label for='cost_treatment' class='mb-1'>Biaya Pengobatan</label>
                                                 <input type='text' name='cost_treatment' id='cost_treatment'
                                                     class='form-control' value="{{ $detail->cost_treatment }}"
-                                                    oninput="formatNumber(this); calculateTotal();">
+                                                   >
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class='form-group'>
-                                                <label for='cost_care1' class='mb-1'>Biaya Perawatan 1</label>
-                                                <input type='text' name='cost_care1' id='cost_care1'
-                                                    class='form-control' value="{{ $detail->cost_care1 }}"
-                                                    oninput="formatNumber(this); calculateTotal();">
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="row">
+                                            <!-- Care 1 -->
+                                            <div class="col-md-6 col-sm-12 mb-3">
+                                                <div class='form-group'>
+                                                    <label for='care_type1' class="mb-1">Jenis Perawatan 1</label>
+                                                    <select name='care_type1' id='care_type1' class='form-control'>
+                                                        <option value='' selected disabled>Pilih Perawatan
+                                                        </option>
+                                                        <option @selected($detail->care_type1 == 'Rawat Inap') value="Rawat Inap">Rawat Inap</option>
+                                                        <option @selected($detail->care_type1 == 'Rawat Jalan') value="Rawat Jalan">Rawat Jalan</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 mb-3">
+                                                <div class='form-group'>
+                                                    <label for='cost_care1' class='mb-1'>Biaya Perawatan 1</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">Rp</span>
+                                                        <input type='number' name='cost_care1' id='cost_care1'
+                                                            class='form-control' value="{{ $detail->cost_care1 }}"
+                                                            placeholder="Masukkan biaya perawatan">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Care 2 -->
+                                            <div class="col-md-6 col-sm-12 mb-3">
+                                                <div class='form-group'>
+                                                    <label for='care_type2' class="mb-1">Jenis Perawatan 2</label>
+                                                    <select name='care_type2' id='care_type2' class='form-control'>
+                                                        <option value='' selected disabled>Pilih Perawatan
+                                                        </option>
+                                                        <option @selected($detail->care_type2 == 'Rawat Inap') value="Rawat Inap">Rawat Inap</option>
+                                                        <option @selected($detail->care_type2 == 'Rawat Jalan') value="Rawat Jalan">Rawat Jalan</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 col-sm-12 mb-3">
+                                                <div class='form-group'>
+                                                    <label for='cost_care2' class='mb-1'>Biaya Perawatan 2</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">Rp</span>
+                                                        <input type='number' name='cost_care2' id='cost_care2'
+                                                            class='form-control' value="{{ $detail->cost_care2 }}"  
+                                                            placeholder="Masukkan biaya perawatan">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class='form-group'>
-                                                <label for='cost_care2' class='mb-1'>Biaya Perawatan 2</label>
-                                                <input type='text' name='cost_care2' id='cost_care2'
-                                                    class='form-control' value="{{ $detail->cost_care2 }}"
-                                                    oninput="formatNumber(this); calculateTotal();">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class='form-group'>
-                                                <label for='cost_glasses' class='mb-1'>Biaya Kacamata</label>
-                                                <input type='text' name='cost_glasses' id='cost_glasses'
-                                                    class='form-control' value="{{ $detail->cost_glasses }}"
-                                                    oninput="formatNumber(this); calculateTotal();">
+                                        <div class="row">
+                                            <div class="col-md-12 mb-3">
+                                                <div class='form-group'>
+                                                    <label for='cost_glasses' class='mb-1'>Biaya Kacamata</label>
+                                                    <input type='text' name='cost_glasses' id='cost_glasses'
+                                                        class='form-control' value="{{ $detail->cost_glasses }}"
+                                                       >
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -84,7 +119,7 @@
                                         </div>
                                         <div class="col-12 mb-3">
                                             <div class='form-group'>
-                                                <label for='files' class='mb-1'>Upload File (JPG,PNG)</label>
+                                                <label for='files' class='mb-1'>Upload File (JPG,PNG) - Maksimal 5 file, 1MB per file</label>
                                                 <input type='file' name='files[]' id='files'
                                                     class='form-control' accept="image/jpeg,image/png" multiple
                                                     onchange="previewFiles(this);">
@@ -183,11 +218,12 @@ function formatNumber(input) {
     // Remove non-numeric characters
     let value = input.value.replace(/[^0-9]/g, '');
     
-    // Format with thousand separator
-    if (value) {
-        value = parseInt(value).toLocaleString('id-ID');
-        input.value = value.replace(/\./g, ',');
-    }
+    // // Format with thousand separator
+    // if (value) {
+    //     value = parseInt(value).toLocaleString('id-ID');
+    //     input.value = value.replace(/\./g, ',');
+    // }
+    return value;
 }
 
 // Calculate total from all cost inputs
@@ -208,9 +244,44 @@ function calculateTotal() {
 // Preview uploaded files
 function previewFiles(input) {
     const container = document.getElementById('new-file-preview-container');
+    const maxSize = 1048576; // 1MB in bytes
+    const maxFiles = 5;
     container.innerHTML = '';
 
-    Array.from(input.files).forEach((file, index) => {
+    // Check file count limit
+    if (input.files.length > maxFiles) {
+        Swal.fire({
+            title: 'Terlalu Banyak File',
+            text: `Maksimal hanya boleh upload ${maxFiles} file. Anda memilih ${input.files.length} file.`,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        input.value = '';
+        return;
+    }
+
+    // Filter out files that are too large
+    const validFiles = Array.from(input.files).filter(file => {
+        if (file.size > maxSize) {
+            Swal.fire({
+                title: 'File Terlalu Besar',
+                text: `File "${file.name}" terlalu besar. Maksimal ukuran file adalah 1MB.`,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+        return true;
+    });
+
+    // Update the file input with only valid files
+    if (validFiles.length !== input.files.length) {
+        const dt = new DataTransfer();
+        validFiles.forEach(file => dt.items.add(file));
+        input.files = dt.files;
+    }
+
+    validFiles.forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = function(e) {
             const div = document.createElement('div');
@@ -221,6 +292,9 @@ function previewFiles(input) {
                     <div class="card-body p-2">
                         <div class="d-flex justify-content-between align-items-center">
                             <small class="text-muted">${file.name}</small>
+                            <small class="text-muted">${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-1">
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeNewFile(${index}, this)">
                                 <i class="fas fa-trash"></i>
                             </button>

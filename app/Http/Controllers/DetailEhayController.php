@@ -26,8 +26,30 @@ class DetailEhayController extends Controller
             'cost_care2' => 'nullable',
             'cost_glasses' => 'nullable',
             'keterangan' => 'nullable',
-            'files.*' => 'nullable|image|mimes:jpeg,png|max:2048',
+            'files.*' => 'nullable|image|mimes:jpeg,png|max:1024',
+        ], [
+            'files.*.max' => 'Ukuran file tidak boleh lebih dari 1MB.',
+            'files.*.mimes' => 'File harus berformat JPG atau PNG.',
+            'files.*.image' => 'File harus berupa gambar.'
         ]);
+
+        // Additional file size and count validation (in case frontend validation is bypassed)
+        if ($request->hasFile('files')) {
+            // Check file count limit
+            if (count($request->file('files')) > 5) {
+                return redirect()->back()
+                    ->withErrors(['files' => 'Maksimal hanya boleh upload 5 file.'])
+                    ->withInput();
+            }
+
+            foreach ($request->file('files') as $file) {
+                if ($file && $file->getSize() > 1048576) { // 1MB in bytes
+                    return redirect()->back()
+                        ->withErrors(['files' => "File {$file->getClientOriginalName()} terlalu besar. Maksimal ukuran file adalah 1MB."])
+                        ->withInput();
+                }
+            }
+        }
 
         try {
             DB::beginTransaction();
@@ -69,6 +91,7 @@ class DetailEhayController extends Controller
                 ->route('ehay.edit', $detail->ehay->uuid)
                 ->with('success', 'Data detail berhasil diubah');
         } catch (\Exception $e) {
+            // dd($e->getMessage());
             DB::rollback();
             return redirect()
                 ->back()
