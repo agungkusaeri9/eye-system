@@ -79,17 +79,31 @@ class DetailEhayController extends Controller
             }
 
             $data['nominal_total'] =
-                ($detail->cost_treatment ?? 0) +
-                ($detail->cost_care1 ?? 0) +
-                ($detail->cost_care2 ?? 0) +
-                ($detail->cost_glasses ?? 0);
+                ($request->cost_treatment ?? 0) +
+                ($request->cost_care1 ?? 0) +
+                ($request->cost_care2 ?? 0) +
+                ($request->cost_glasses ?? 0);
 
             $detail->update($data);
 
+            $nominalExecEdit = EhayDetail::where('ehay_id', $detail->ehay_id)->whereNot('id', $detail->id)->sum('nominal_total');
+            $nominalCalculate =  $data['nominal_total'];
+            $nominalTotal = $nominalExecEdit + $nominalCalculate;
+
+            // dd($nominalExecEdit, $nominalCalculate, $nominalTotal);
+
+            // update status ehay
+            $detail->ehay->update([
+                'status' => 1,
+                'nominal_total' => $nominalTotal
+            ]);
+            $detail->ehay->logStatus()->create([
+                'name' => 'Waiting for HCGS Admin Validation',
+                'status' => 1
+            ]);
+
             DB::commit();
-            return redirect()
-                ->route('ehay.edit', $detail->ehay->uuid)
-                ->with('success', 'Data detail berhasil diubah');
+            return redirect()->route('ehay.customer-list')->with('success', 'Data berhasil direvisi.');
         } catch (\Exception $e) {
             // dd($e->getMessage());
             DB::rollback();
