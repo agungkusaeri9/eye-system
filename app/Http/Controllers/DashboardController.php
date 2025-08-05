@@ -16,6 +16,8 @@ class DashboardController extends Controller
             return redirect()->route('ehay.customer-list');
         } elseif (auth()->user()->role == 4 || auth()->user()->role == 5) {
             return redirect()->route('ehay.index');
+        } elseif (auth()->user()->role == 6) {
+            return redirect()->route('ehay.status');
         }
 
         $title = 'Dashboard';

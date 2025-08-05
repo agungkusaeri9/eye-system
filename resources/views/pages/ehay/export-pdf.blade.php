@@ -152,10 +152,10 @@
                 <tr>
                     <th style="text-align: right; width:40%">
                         @php
-                            $path = public_path('assets/img/logo.png');
-                            $type = pathinfo($path, PATHINFO_EXTENSION);
-                            $data = file_get_contents($path);
-                            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                        $path = public_path('assets/img/logo.png');
+                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                        $data = file_get_contents($path);
+                        $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                         @endphp
                         <img src="{{ $base64 }}" alt="Logo" style="height: 60px;">
                     </th>
@@ -194,8 +194,9 @@
                     <th
                         style="font-weight:normal;width:40px;text-align:left;border-right:0px solid black !important;border-left:0px solid black !important">
                         :</th>
-                    <th style="font-weight:normal;width:40px;text-align:left;border-right:1px solid black !important;border-left:0px solid black !important">
-                        </th>
+                    <th
+                        style="font-weight:normal;width:40px;text-align:left;border-right:1px solid black !important;border-left:0px solid black !important">
+                    </th>
                 </tr>
                 <tr>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:40px">NO.</th>
@@ -205,27 +206,39 @@
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">PENGOBATAN</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">PERAWATAN</th>
                     <th style="text-align:center;vertical-align:middle;font-weight:bold;width:120px">KACAMATA</th>
-                    <th style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">TOTAL APPROVE</th>
+                    <th
+                        style="text-align:center;vertical-align:middle;font-weight:bold;width:100px;border-right:1px solid black !important">
+                        TOTAL APPROVE</th>
                 </tr>
             </thead>
             <tbody>
-    
-            @foreach ($items as $item)
-            <tr>
-                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $loop->iteration }}</td>
-                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->nrp }}</td>
-                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->name }}</td>
-                <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->department->name }}</td>
-                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->details->sum('cost_treatment'), 0, ',', '.') }}</td>
-                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format(($item->details->sum('cost_care1') + $item->details->sum('cost_care2')), 0, ',', '.') }}</td>
-                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->details->sum('cost_glasses'), 0, ',', '.') }}</td>
-                <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{ number_format($item->nominal_approve, 0, ',', '.') }}</td>
-            </tr>
-            @endforeach
-            <tr>
-                <td colspan="7" style="text-align:center;vertical-align:middle;font-weight:bold;width:100%">TOTAL</td>
-                <td style="text-align:right;vertical-align:middle;white-space:nowrap font-weight:bold">Rp. {{ number_format($items->sum('nominal_approve'), 0, ',', '.') }}</td>
-            </tr>
+
+                @foreach ($items as $item)
+                <tr>
+                    <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $loop->iteration }}</td>
+                    <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->nrp }}
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{ $item->employee->name }}
+                    </td>
+                    <td style="text-align:center;vertical-align:middle;word-wrap:break-word">{{
+                        $item->employee->department->name }}</td>
+                    <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{
+                        number_format($item->details->sum('cost_treatment'), 0, ',', '.') }}</td>
+                    <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{
+                        number_format(($item->details->sum('cost_care1') + $item->details->sum('cost_care2')), 0, ',',
+                        '.') }}</td>
+                    <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{
+                        number_format($item->details->sum('cost_glasses'), 0, ',', '.') }}</td>
+                    <td style="text-align:right;vertical-align:middle;white-space:nowrap">Rp. {{
+                        number_format($item->nominal_approve, 0, ',', '.') }}</td>
+                </tr>
+                @endforeach
+                <tr>
+                    <td colspan="7" style="text-align:center;vertical-align:middle;font-weight:bold;width:100%">TOTAL
+                    </td>
+                    <td style="text-align:right;vertical-align:middle;white-space:nowrap font-weight:bold">Rp. {{
+                        number_format($items->sum('nominal_approve'), 0, ',', '.') }}</td>
+                </tr>
             </tbody>
         </table>
         <div class="signature-table">
@@ -234,10 +247,10 @@
                     <tr>
                         <th style="text-align: right; width:40%">
                             @php
-                                $path = public_path('assets/img/logo.png');
-                                $type = pathinfo($path, PATHINFO_EXTENSION);
-                                $data = file_get_contents($path);
-                                $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                            $path = public_path('assets/img/logo.png');
+                            $type = pathinfo($path, PATHINFO_EXTENSION);
+                            $data = file_get_contents($path);
+                            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
                             @endphp
                             <img src="{{ $base64 }}" alt="Logo" style="height: 60px;">
                         </th>
@@ -358,48 +371,38 @@
     </div>
 
     @php
-        $filesArray = $files ? $files->toArray() : [];
-        $chunks = array_chunk($filesArray, 4);
-        $chunksCount = count($chunks);
-        $hasSignature = true; // karena ada tabel tanda tangan di halaman sebelumnya
+    $filesArray = $files ? $files->toArray() : [];
+    $chunks = array_chunk($filesArray, 4);
+    $chunksCount = count($chunks);
+    $hasSignature = true; // karena ada tabel tanda tangan di halaman sebelumnya
     @endphp
 
     @foreach ($chunks as $index => $chunk)
-        <div
-            style="
+    <div style="
         {{ $index === 0 && $hasSignature ? 'page-break-before: always;' : '' }}
         {{ $index + 1 < $chunksCount ? 'page-break-after: always;' : '' }}
     ">
-            <table class="image-table" style="width:100%;">
-                @for ($row = 0; $row < 2; $row++)
-                    <tr>
-                        @for ($col = 0; $col < 2; $col++)
-                            @php $idx = $row * 2 + $col; @endphp
-                            @if (isset($chunk[$idx]))
-                                @php
-                                    $relativePath = 'app/public/' . $chunk[$idx]['file'];
-                                    $path = storage_path($relativePath);
-                                @endphp
-
-                                @if (file_exists($path))
-                                    <td style="margin: 5px; text-align:center;">
-                                        @php
-                                            $type = pathinfo($path, PATHINFO_EXTENSION);
-                                            $data = file_get_contents($path);
-                                            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
-                                        @endphp
-                                        <img src="{{ $base64 }}" alt="Image {{ $idx + 1 }}"
-                                            style="max-width: 100%; height: auto;">
-                                    </td>
-                                @endif
-                            @endif
-                        @endfor
+        <table class="image-table" style="width:100%;">
+            @for ($row = 0; $row < 2; $row++) <tr>
+                @for ($col = 0; $col < 2; $col++) @php $idx=$row * 2 + $col; @endphp @if (isset($chunk[$idx])) @php
+                    $relativePath='app/public/' . $chunk[$idx]['file']; $path=storage_path($relativePath); @endphp @if
+                    (file_exists($path)) <td style="margin: 5px; text-align:center;">
+                    @php
+                    $type = pathinfo($path, PATHINFO_EXTENSION);
+                    $data = file_get_contents($path);
+                    $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+                    @endphp
+                    <img src="{{ $base64 }}" alt="Image {{ $idx + 1 }}" style="max-width: 100%; height: auto;">
+                    </td>
+                    @endif
+                    @endif
+                    @endfor
                     </tr>
-                @endfor
-            </table>
+                    @endfor
+        </table>
 
 
-        </div>
+    </div>
     @endforeach
 
 

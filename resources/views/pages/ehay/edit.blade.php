@@ -54,6 +54,19 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-md-4 col-sm-12 mb-3">
+                            <div class='form-group'>
+                                <label for='status' class='mb-1'>Status ({{ $item->currentLogStatusData()->name
+                                    }})</label>
+                                <input type='text' name='status' id='status' class='form-control @error(' status')
+                                    is-invalid @enderror' value="{{ $item->currentLogStatusData()->notes }}" disabled>
+                                @error('status')
+                                <div class='invalid-feedback'>
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                        </div>
                         {{-- <div class="float-right">
                             <button class="btn btn-primary mt-2" type="submit">
                                 <i class="fa fa-save me-2"></i>
@@ -66,6 +79,186 @@
         </div>
     </div>
 </form>
+{{-- <div class="row">
+    @foreach ($item->details as $detail)
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="col-md-12 col-sm-12 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">Data Pasien dan Pengobatan</h6>
+                        <button type="button" class="btn btn-primary btn-sm" id="add-patient-group">
+                            <i class="fas fa-plus"></i> Tambah Data
+                        </button>
+                    </div>
+                    <div id="patient-groups-container">
+                        <div class="patient-group mb-4 border rounded p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0">Data #1</h6>
+                                <button type="button" class="btn btn-danger btn-sm remove-patient-group">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </div>
+
+                            <!-- Informasi Pasien -->
+                            <div class="row mb-3">
+                                <div class="col-md-6 col-sm-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='patient_name' class='mb-1'>Nama Pasien</label>
+                                        <input type='text' name='patient_name[]' id='patient_name'
+                                            class='form-control @error(' patient_name') is-invalid @enderror'
+                                            value='{{ $detail->patien_name ??  old(' patient_name.0') }}'>
+                                        @error('patient_name')
+                                        <div class='invalid-feedback'>
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12 mb-3">
+                                    <div class='form-group'>
+                                        <label for='patient_status' class="mb-1">Status Pasien</label>
+                                        <select name='patient_status[]' id='patient_status' class='form-control @error('
+                                            patient_status') is-invalid @enderror'>
+                                            <option value='' selected disabled>Pilih Status Pasien
+                                            </option>
+                                            <option value="Ybs">Ybs</option>
+                                            <option value="Istri/Suami">Istri/Suami</option>
+                                            <option value="Anak 1">Anak 1</option>
+                                            <option value="Anak 2">Anak 2</option>
+                                            <option value="Anak 3">Anak 3</option>
+                                            <option value="Anak 4">Anak 4</option>
+                                            <option value="Anak 5">Anak 5</option>
+                                        </select>
+                                        @error('patient_status')
+                                        <div class='invalid-feedback'>
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informasi Pengobatan -->
+                            <div class="mb-3">
+                                <h6 class="mb-2">Pengobatan</h6>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='cost_treatment' class='mb-1'>Biaya Pengobatan</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rp</span>
+                                                <input type='number' name='cost_treatment[]' id='cost_treatment'
+                                                    class='form-control' placeholder="Masukkan biaya pengobatan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informasi Perawatan -->
+                            <div class="mb-3">
+                                <h6 class="mb-2">Perawatan</h6>
+                                <div class="row">
+                                    <!-- Care 1 -->
+                                    <div class="col-md-6 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='care_type1' class="mb-1">Jenis Perawatan 1</label>
+                                            <select name='care_type1[]' id='care_type1' class='form-control'>
+                                                <option value='' selected disabled>Pilih Perawatan
+                                                </option>
+                                                <option value="Rawat Inap">Rawat Inap</option>
+                                                <option value="Rawat Jalan">Rawat Jalan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='cost_care1' class='mb-1'>Biaya Perawatan 1</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rp</span>
+                                                <input type='number' name='cost_care1[]' id='cost_care1'
+                                                    class='form-control' placeholder="Masukkan biaya perawatan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Care 2 -->
+                                    <div class="col-md-6 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='care_type2' class="mb-1">Jenis Perawatan 2</label>
+                                            <select name='care_type2[]' id='care_type2' class='form-control'>
+                                                <option value='' selected disabled>Pilih Perawatan
+                                                </option>
+                                                <option value="Rawat Inap">Rawat Inap</option>
+                                                <option value="Rawat Jalan">Rawat Jalan</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='cost_care2' class='mb-1'>Biaya Perawatan 2</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rp</span>
+                                                <input type='number' name='cost_care2[]' id='cost_care2'
+                                                    class='form-control' placeholder="Masukkan biaya perawatan">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Informasi Kacamata -->
+                            <div class="mb-3">
+                                <h6 class="mb-2">Kacamata</h6>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='cost_glasses' class='mb-1'>Biaya Kacamata</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">Rp</span>
+                                                <input type='number' name='cost_glasses[]' id='cost_glasses'
+                                                    class='form-control' placeholder="Masukkan biaya kacamata">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Keterangan dan Lampiran -->
+                            <div class="mb-3">
+                                <h6 class="mb-2">Keterangan dan Lampiran</h6>
+                                <div class="row">
+                                    <div class="col-md-12 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='keterangan' class='mb-1'>Keterangan</label>
+                                            <input type='text' name='keterangan[]' id='keterangan' class='form-control'
+                                                placeholder="Masukkan keterangan">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 col-sm-12 mb-3">
+                                        <div class='form-group'>
+                                            <label for='file' class='mb-1'>Lampiran (JPG,PNG) - Maksimal 5 file, 1MB per
+                                                file</label>
+                                            <input type='file' name='file_detail[0][]' id='file' class='form-control'
+                                                accept="image/jpeg,image/png" multiple data-max-size="1048576"
+                                                data-max-files="5">
+                                        </div>
+                                        <div id="file-preview-container-0" class="row mt-2">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @endforeach
+</div> --}}
+
 <div class="row">
     <div class="col-md-12">
         <div class="row">
@@ -107,12 +300,13 @@
                                                 <td>
                                                     <a href="{{ route('ehay-detail.edit', $detail->uuid) }}"
                                                         class="btn btn-info btn-sm">Edit</a>
-                                                    <form action="{{ route('ehay-detail.destroy', $detail->uuid) }}"
+                                                    {{-- <form
+                                                        action="{{ route('ehay-detail.destroy', $detail->uuid) }}"
                                                         method="POST" class="d-inline">
                                                         @method('DELETE')
                                                         @csrf
                                                         <button class="btn btn-sm btn-danger">Hapus</button>
-                                                    </form>
+                                                    </form> --}}
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -127,6 +321,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">

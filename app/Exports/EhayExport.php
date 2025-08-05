@@ -38,7 +38,7 @@ class EhayExport implements FromView
         } else {
             $data->where('status', '!=', 5);
         }
-        $items = $data->get();
+        $items = $data->getByRole()->get();
         return view('pages.ehay.export-excel', [
             'items' => $items,
             'status' => $this->filter['status']

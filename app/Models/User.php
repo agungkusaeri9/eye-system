@@ -75,4 +75,5 @@ class User extends Authenticatable
     // 3. karyawan
     // 4. admin claim
     // 5. validator claim
+    // 6. admin departemen
 }

@@ -96,6 +96,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('/validator', ValidatorController::class);
 
         // Route Departement
+        Route::get('departemen/{id}/admin', [DepartmentController::class, 'admin'])->name('departemen.admin');
+        Route::post('departemen/{id}/admin', [DepartmentController::class, 'adminStore'])->name('departemen.admin.store');
         Route::resource('/departemen', DepartmentController::class);
 
         // Route Company
@@ -147,7 +149,7 @@ Route::middleware('auth')->group(function () {
     // Route Ehay
     Route::get('/karyawan-json/get', [EmployeeController::class, 'getById'])->name('karyawan.getById');
 
-    Route::controller(EhayController::class)->middleware(['auth', 'is_role:1,3,5,4'])->group(function () {
+    Route::controller(EhayController::class)->middleware(['auth', 'is_role:1,3,5,4,6'])->group(function () {
 
         Route::middleware(['is_role:3'])->group(function () {
             Route::get('ehay/list', [EhayController::class, 'cust_history'])->name('ehay.customer-list');
@@ -162,8 +164,7 @@ Route::middleware('auth')->group(function () {
             Route::post('ehay/create', 'store')->name('ehay.store');
         });
 
-        Route::middleware(['is_role:1,4,5'])->group(function () {
-
+        Route::middleware(['is_role:1,4,5,6'])->group(function () {
             Route::middleware(['is_role:1,4,5'])->group(function () {
                 Route::get('ehay', 'index')->name('ehay.index');
                 Route::get('ehay/{id}/validation', 'validation')->name('ehay.validation');
@@ -171,10 +172,10 @@ Route::middleware('auth')->group(function () {
             });
 
             // ehay admin claim
-            Route::middleware(['is_role:1,4,5'])->group(function () {
+            Route::middleware(['is_role:1,4,5,6'])->group(function () {
                 Route::post('ehay/{uuid}/approve', [EhayController::class, 'approve'])->name('ehay.approve')->middleware('is_role:4,5');
                 Route::get('ehay/list', 'list')->name('ehay.list');
-                Route::get('ehay/status', 'status')->name('ehay.status');
+                Route::get('ehay/status', 'status')->name('ehay.status')->middleware('is_role:1,4,5,6');
                 Route::get('ehay/history', 'history')->name('ehay.history');
                 Route::get('ehay/export-excel', 'exportExcel')->name('ehay.export-excel');
                 Route::get('ehay/export-pdf', 'exportPdf')->name('ehay.export-pdf');

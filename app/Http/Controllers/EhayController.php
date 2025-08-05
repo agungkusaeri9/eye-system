@@ -211,7 +211,7 @@ class EhayController extends Controller
         $title = 'Data Ehay Status';
 
         if ($request->ajax()) {
-            $data = Ehay::whereIn('status', [0, 1, 2, 3])->latest()->limit(1000)->get();
+            $data = Ehay::getByRole()->whereIn('status', [0, 1, 2, 3])->latest()->limit(1000)->get();
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -220,7 +220,11 @@ class EhayController extends Controller
                     return $model->employee->nrp . ' - ' . $model->employee->name;
                 })
                 ->addColumn('current_log_status', function ($model) {
-                    return $model->currentLogStatus();
+                    if ($model->currentLogStatus() == 'Waiting for Revision') {
+                        return $model->currentLogStatus() . ' <br> (' . $model->currentLogStatusData()->notes . ')';
+                    } else {
+                        return $model->currentLogStatus();
+                    }
                 })
                 ->addColumn('action', function ($row) {
                     if (auth()->user()->role == 4) {

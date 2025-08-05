@@ -223,6 +223,17 @@ class Ehay extends Model
         }
     }
 
+    public function scopeGetByRole($query)
+    {
+        if (auth()->user()->role == 6) {
+            return $query->whereHas('employee', function ($q) {
+                $q->whereHas('department', function ($q) {
+                    $q->where('id', auth()->user()->department);
+                });
+            });
+        }
+    }
+
     public function family()
     {
         return $this->belongsTo(Family::class);
@@ -303,4 +314,11 @@ class Ehay extends Model
     {
         return $this->hasMany(EhayDetail::class, 'ehay_id', 'id');
     }
+
+    // public function scopeByRole($query)
+    // {
+    //     // return $query->whereHas('user', function($user){
+    //     //     $user->where('id');
+    //     // })
+    // }
 }
