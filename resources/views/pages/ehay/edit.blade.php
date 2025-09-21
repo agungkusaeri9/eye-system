@@ -3,6 +3,13 @@
 <h4 class="fw-bold py-3 mb-34">
     <span class="text-muted fw-light">Data Ehay /</span> Feature / {{ $title }}
 </h4>
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>✅ Sukses!</strong> {{ session('success') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <form method="POST" enctype="multipart/form-data" action="#">
     <div class="row mb-2">
         @method('patch')
@@ -67,12 +74,14 @@
                                 @enderror
                             </div>
                         </div>
-                        {{-- <div class="float-right">
+                        @if (session('success'))
+                        <div class="float-right">
                             <button class="btn btn-primary mt-2" type="submit">
                                 <i class="fa fa-save me-2"></i>
                                 <span class="align-middle">Submit Revision</span>
                             </button>
-                        </div> --}}
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

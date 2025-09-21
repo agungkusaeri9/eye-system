@@ -138,7 +138,7 @@
                 @endif
 
                 {{-- Role 1, 4, 6: Status --}}
-                @if (in_array(auth()->user()->role, [1, 4, 6]))
+                @if (in_array(auth()->user()->role, [1, 4, 6, 5]))
                 <li class="menu-item {{ request()->is('ehay/status') ? 'active' : '' }}">
                     <a href="{{ route('ehay.status') }}" class="menu-link text-white">
                         <div>Status</div>
@@ -147,7 +147,7 @@
                 @endif
 
                 {{-- Role 1, 4: List dan History --}}
-                @if (in_array(auth()->user()->role, [1, 4]))
+                @if (in_array(auth()->user()->role, [1, 4, 5]))
                 <li class="menu-item {{ request()->is('ehay/status') ? 'active' : '' }}">
                     <a href="{{ route('ehay.list') }}" class="menu-link text-white">
                         <div>List</div>

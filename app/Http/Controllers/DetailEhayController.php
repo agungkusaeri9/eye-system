@@ -94,16 +94,18 @@ class DetailEhayController extends Controller
 
             // update status ehay
             $detail->ehay->update([
-                'status' => 1,
+                // 'status' => 1,
                 'nominal_total' => $nominalTotal
             ]);
-            $detail->ehay->logStatus()->create([
-                'name' => 'Waiting for HCGS Admin Validation',
-                'status' => 1
-            ]);
+            // $detail->ehay->logStatus()->create([
+            //     'name' => 'Waiting for HCGS Admin Validation',
+            //     'status' => 1
+            // ]);
 
             DB::commit();
-            return redirect()->route('ehay.customer-list')->with('success', 'Data berhasil direvisi.');
+            return redirect()
+                ->route('ehay.edit', $detail->ehay->uuid)
+                ->with('success', 'Detail Ehay berhasil diperbarui. Anda dapat melakukan perubahan lagi atau langsung menekan tombol Submit Revision untuk memperbarui data.');
         } catch (\Exception $e) {
             // dd($e->getMessage());
             DB::rollback();
