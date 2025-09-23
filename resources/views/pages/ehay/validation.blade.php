@@ -11,11 +11,12 @@
                 <div class="col mb-2">
                     <div class="row">
                         <div class="col-md">
-                           @if (auth()->user()->role == 4)
-                           <button class="btn btn-success" name="btn" value="1">Approve</button>
-                           @elseif (auth()->user()->role == 5)
-                           <button class="btn btn-success btnApprove" name="btn" type="button" value="1">Approve</button>
-                           @endif
+                            @if (auth()->user()->role == 4)
+                                <button class="btn btn-success" name="btn" value="1">Approve</button>
+                            @elseif (auth()->user()->role == 5)
+                                <button class="btn btn-success btnApprove" name="btn" type="button"
+                                    value="1">Approve</button>
+                            @endif
                             <button class="btn btn-danger btnReject" name="btn" value="0">Reject</button>
                         </div>
                     </div>
@@ -176,19 +177,19 @@
                                 $extension = pathinfo($file->file, PATHINFO_EXTENSION);
                             @endphp
                             @if ($extension == 'pdf')
-                            <div class="col-md-3">
-                                <a href="javascript:void(0)" class="file"
-                                    data-url={{ asset('storage/' . $file->file) }}>
-                                    <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
-                                        class="img-fluid w-full" style="height:80px">
-                                </a>
-                            </div>
-                        @else
-                            <div class="col-md-3">
-                                <a href="javascript:void(0)" class="file"
-                                    data-url={{ asset('storage/' . $file->file) }}>
-                                    <img src="{{ asset('storage/' . $file->file) }}" alt="File"
-                                        class="img-fluid">
+                                <div class="col-md-3">
+                                    <a href="javascript:void(0)" class="file"
+                                        data-url={{ asset('storage/' . $file->file) }}>
+                                        <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
+                                            class="img-fluid w-full" style="height:80px">
+                                    </a>
+                                </div>
+                            @else
+                                <div class="col-md-3">
+                                    <a href="javascript:void(0)" class="file"
+                                        data-url={{ asset('storage/' . $file->file) }}>
+                                        <img src="{{ asset('storage/' . $file->file) }}" alt="File"
+                                            class="img-fluid">
                                     </a>
                                 </div>
                             @endif
@@ -216,6 +217,8 @@
                     <iframe src="" id="iframeDetail" class="w-100 d-none" style="height: 80vh;"></iframe>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="rotateLeft">⟲ Rotate Left</button>
+                    <button type="button" class="btn btn-primary" id="rotateRight">⟳ Rotate Right</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -261,8 +264,8 @@
         </div>
     </div>
 
-     <!-- Modal -->
-     <div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal -->
+    <div class="modal fade" id="modalApprove" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -345,6 +348,35 @@
                 value = new Intl.NumberFormat('id-ID').format(value);
                 this.value = value;
             })
+
+            let rotation = 0;
+
+            $('body').on('click', '.file', function() {
+                var url = $(this).data('url');
+                var extension = url.split('.').pop().toLowerCase();
+                rotation = 0; // reset tiap kali buka gambar baru
+
+                if (extension === 'pdf') {
+                    $('#iframeDetail').removeClass('d-none');
+                    $('#imgDetail').addClass('d-none');
+                    $('#iframeDetail').attr('src', url);
+                } else {
+                    $('#imgDetail').removeClass('d-none');
+                    $('#iframeDetail').addClass('d-none');
+                    $('#imgDetail').attr('src', url).css('transform', 'rotate(0deg)');
+                }
+                $('#modalDetail').modal('show');
+            });
+
+            $('#rotateLeft').on('click', function() {
+                rotation -= 90;
+                $('#imgDetail').css('transform', 'rotate(' + rotation + 'deg)');
+            });
+
+            $('#rotateRight').on('click', function() {
+                rotation += 90;
+                $('#imgDetail').css('transform', 'rotate(' + rotation + 'deg)');
+            });
         })
     </script>
 @endsection

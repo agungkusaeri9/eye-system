@@ -131,19 +131,19 @@
                                         $extension = pathinfo($file->file, PATHINFO_EXTENSION);
                                     @endphp
                                     @if ($extension == 'pdf')
-                                    <div class="col-md-3">
-                                        <a href="javascript:void(0)" class="file"
-                                            data-url={{ asset('storage/' . $file->file) }}>
-                                            <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
-                                                class="img-fluid w-full" style="height:80px">
-                                        </a>
-                                    </div>
-                                @else
-                                    <div class="col-md-3">
-                                        <a href="javascript:void(0)" class="file"
-                                            data-url={{ asset('storage/' . $file->file) }}>
-                                            <img src="{{ asset('storage/' . $file->file) }}" alt="File"
-                                                class="img-fluid">
+                                        <div class="col-md-3">
+                                            <a href="javascript:void(0)" class="file"
+                                                data-url={{ asset('storage/' . $file->file) }}>
+                                                <img src="{{ asset('assets/img/pdf-icon.svg') }}" alt="File"
+                                                    class="img-fluid w-full" style="height:80px">
+                                            </a>
+                                        </div>
+                                    @else
+                                        <div class="col-md-3">
+                                            <a href="javascript:void(0)" class="file"
+                                                data-url={{ asset('storage/' . $file->file) }}>
+                                                <img src="{{ asset('storage/' . $file->file) }}" alt="File"
+                                                    class="img-fluid">
                                             </a>
                                         </div>
                                     @endif
@@ -157,7 +157,7 @@
     </div>
 
     <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Lampiran</h1>
@@ -168,11 +168,28 @@
                     <iframe src="" id="iframeDetail" class="w-100 d-none" style="height: 80vh;"></iframe>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="rotateLeft">⟲ Rotate Left</button>
+                        <button type="button" class="btn btn-primary" id="rotateRight">⟳ Rotate Right</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+@endsection
+@section('styles')
+    <style>
+        #imgDetail {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            max-height: 80vh;
+            /* biar sesuai tinggi modal */
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+    </style>
 @endsection
 @section('page-script')
     <script>
@@ -190,6 +207,36 @@
                     $('#imgDetail').attr('src', url);
                 }
                 $('#modalDetail').modal('show');
+            });
+
+
+            let rotation = 0;
+
+            $('body').on('click', '.file', function() {
+                var url = $(this).data('url');
+                var extension = url.split('.').pop().toLowerCase();
+                rotation = 0; // reset tiap kali buka gambar baru
+
+                if (extension === 'pdf') {
+                    $('#iframeDetail').removeClass('d-none');
+                    $('#imgDetail').addClass('d-none');
+                    $('#iframeDetail').attr('src', url);
+                } else {
+                    $('#imgDetail').removeClass('d-none');
+                    $('#iframeDetail').addClass('d-none');
+                    $('#imgDetail').attr('src', url).css('transform', 'rotate(0deg)');
+                }
+                $('#modalDetail').modal('show');
+            });
+
+            $('#rotateLeft').on('click', function() {
+                rotation -= 90;
+                $('#imgDetail').css('transform', 'rotate(' + rotation + 'deg)');
+            });
+
+            $('#rotateRight').on('click', function() {
+                rotation += 90;
+                $('#imgDetail').css('transform', 'rotate(' + rotation + 'deg)');
             });
         })
     </script>
