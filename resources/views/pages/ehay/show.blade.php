@@ -30,25 +30,31 @@
                                     <span class="" style="font-weight: bold">Department</span>
                                     <span>{{ $item->employee->department->name }}</span>
                                 </li>
-                            </div>
-                            <div class="col-md">
                                 <li class="d-flex justify-content-between mb-3">
                                     <span class="" style="font-weight: bold">Nominal Total</span>
                                     <span>Rp. {{ number_format($item->nominal_total, 0, '.', '.') }}</span>
                                 </li>
+                            </div>
+                            <div class="col-md">
+
                                 <li class="d-flex justify-content-between mb-3">
                                     <span class="" style="font-weight: bold">Nominal Disetujui</span>
                                     <span>Rp. {{ number_format($item->nominal_approve, 0, '.', '.') }}</span>
-
                                 </li>
                                 <li class="d-flex justify-content-between mb-3">
-                                    <span class="" style="font-weight: bold">Tanggal</span>
+                                    <span class="" style="font-weight: bold">Tanggal Pengajuan</span>
                                     <span>{{ $item->created_at->translatedFormat('d F Y H:i') }}</span>
                                 </li>
                                 <li class="d-flex justify-content-between mb-3">
                                     <span class="" style="font-weight: bold">Status Pengajuan</span>
                                     <span>{{ $item->currentLogStatus() }}</span>
                                 </li>
+                                @if ($item->status == 5)
+                                    <li class="d-flex justify-content-between mb-3">
+                                        <span class="" style="font-weight: bold">Tanggal Disetujui</span>
+                                        <span>{{ $item->currentLogStatusData()->created_at->translatedFormat('d F Y H:i') }}</span>
+                                    </li>
+                                @endif
                                 @if ($item->status == 2)
                                     <li class="d-flex justify-content-between mb-3">
                                         <span class="" style="font-weight: bold">Alasan</span>
@@ -70,52 +76,56 @@
                             <h4>Detail</h4>
                         </div>
                         <div class="card-body">
-                            <table class="table table-bordered">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th rowspan="2" class="text-center align-middle">Nama Pasien</th>
-                                        <th rowspan="2" class="text-center align-middle">Status Pasien</th>
-                                        <th rowspan="2" class="text-center align-middle">Pengobatan</th>
-                                        <th colspan="2" class="text-center">Perawatan 1</th>
-                                        <th colspan="2" class="text-center">Perawatan 2</th>
-                                        <th rowspan="2" class="text-center align-middle">Kacamata</th>
-                                        <th rowspan="2" class="text-center align-middle">Total</th>
-                                    </tr>
-                                    <tr>
-                                        <th class="text-center">Jenis</th>
-                                        <th class="text-center">Biaya</th>
-                                        <th class="text-center">Jenis</th>
-                                        <th class="text-center">Biaya</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($item->details as $detail)
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
                                         <tr>
-                                            <td>{{ $detail->patient_name }}</td>
-                                            <td>{{ $detail->patient_status }}</td>
-                                            <td class="text-end">RP.
-                                                {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>
-                                            <td>{{ $detail->care_type1 ?? '-' }}</td>
-                                            <td class="text-end">RP. {{ number_format($detail->cost_care1, 0, ',', '.') }}
-                                            </td>
-                                            <td>{{ $detail->care_type2 ?? '-' }}</td>
-                                            <td class="text-end">RP. {{ number_format($detail->cost_care2, 0, ',', '.') }}
-                                            </td>
-                                            <td class="text-end">RP.
-                                                {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
-                                            <td class="text-end">RP.
-                                                {{ number_format($detail->nominal_total, 0, ',', '.') }}</td>
+                                            <th rowspan="2" class="text-center align-middle">Nama Pasien</th>
+                                            <th rowspan="2" class="text-center align-middle">Status Pasien</th>
+                                            <th rowspan="2" class="text-center align-middle">Pengobatan</th>
+                                            <th colspan="2" class="text-center">Perawatan 1</th>
+                                            <th colspan="2" class="text-center">Perawatan 2</th>
+                                            <th rowspan="2" class="text-center align-middle">Kacamata</th>
+                                            <th rowspan="2" class="text-center align-middle">Total</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                                <tfoot>
-                                    <tr class="table-light">
-                                        <th colspan="8" class="text-end">Total</th>
-                                        <th class="text-end">Rp.
-                                            {{ number_format($item->details->sum('nominal_total'), 0, ',', '.') }}</th>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                        <tr>
+                                            <th class="text-center">Jenis</th>
+                                            <th class="text-center">Biaya</th>
+                                            <th class="text-center">Jenis</th>
+                                            <th class="text-center">Biaya</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($item->details as $detail)
+                                            <tr>
+                                                <td>{{ $detail->patient_name }}</td>
+                                                <td>{{ $detail->patient_status }}</td>
+                                                <td class="text-end">RP.
+                                                    {{ number_format($detail->cost_treatment, 0, ',', '.') }}</td>
+                                                <td>{{ $detail->care_type1 ?? '-' }}</td>
+                                                <td class="text-end">RP.
+                                                    {{ number_format($detail->cost_care1, 0, ',', '.') }}
+                                                </td>
+                                                <td>{{ $detail->care_type2 ?? '-' }}</td>
+                                                <td class="text-end">RP.
+                                                    {{ number_format($detail->cost_care2, 0, ',', '.') }}
+                                                </td>
+                                                <td class="text-end">RP.
+                                                    {{ number_format($detail->cost_glasses, 0, ',', '.') }}</td>
+                                                <td class="text-end">RP.
+                                                    {{ number_format($detail->nominal_total, 0, ',', '.') }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="table-light">
+                                            <th colspan="8" class="text-end">Total</th>
+                                            <th class="text-end">Rp.
+                                                {{ number_format($item->details->sum('nominal_total'), 0, ',', '.') }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -152,6 +162,34 @@
                         </div>
                     </div>
                 </div>
+
+                @if (in_array(auth()->user()->role, [1, 4, 6]))
+                    <div class="col-md-12 mb-2">
+                        <div class="card">
+                            <div class="card-header pb-0 d-flex gap-2">
+                                <h4>Log Status</h4>
+                            </div>
+                            <div class="card-body row">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Tanggal</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($item->logStatus as $log)
+                                            <tr>
+                                                <td>{{ $log->created_at->translatedFormat('d F Y H:i') }}</td>
+                                                <td>{{ $log->name }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
