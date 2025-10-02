@@ -151,8 +151,8 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(EhayController::class)->middleware(['auth', 'is_role:1,3,5,4,6'])->group(function () {
 
-        Route::middleware(['is_role:3'])->group(function () {
-            Route::get('ehay/list', [EhayController::class, 'cust_history'])->name('ehay.customer-list');
+        Route::middleware(['is_role:3,4,5'])->group(function () {
+            Route::get('ehay/list', [EhayController::class, 'cust_history'])->name('ehay.customer-list')->middleware('is_role:3');
             Route::get('ehay/{id}/edit', [EhayController::class, 'edit'])->name('ehay.edit');
             Route::patch('ehay/{id}/edit', [EhayController::class, 'update'])->name('ehay.update');
         });

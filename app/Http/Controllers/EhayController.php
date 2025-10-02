@@ -228,12 +228,16 @@ class EhayController extends Controller
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    if (auth()->user()->role == 4) {
-                        if ($row->status == 4) {
+                    if (in_array(auth()->user()->role, [4, 5])) {
+                        if ($row->status == 4 && auth()->user()->role == 4) {
                             $btn = '<a href="' . route('ehay.show', $row->uuid) . '" class="btn btn-sm btn-warning me-1">Detail</a><a href="#" class="btn btn-sm btn-success me-1 btn-approve" data-id="' . $row->uuid . '" >Approve</a>';
+                        } else if ($row->status == 2 && auth()->user()->email !== "adminclaim2@gmail.com") {
+                            // revision
+                            $btn = '<a href="' . route('ehay.edit', $row->uuid) . '" class="btn btn-sm btn-info me-1">Edit</a>';
                         } else {
                             $btn = '-';
                         }
+
                         return $btn;
                     } else {
                         return "-";
@@ -441,6 +445,7 @@ class EhayController extends Controller
                 'name' => 'Waiting for HCGS Admin Validation',
                 'status' => 1
             ]);
+            if (auth()->user()->role != 3) return redirect()->route('ehay.status')->with('success', 'Data berhasil direvisi.');
             return redirect()->route('ehay.customer-list')->with('success', 'Data berhasil direvisi.');
         } catch (\Throwable $th) {
             //throw $th;
