@@ -246,6 +246,10 @@ class EhayController extends Controller
     public function validation($uuid)
     {
         $item = Ehay::with(['employee.department'])->where('uuid', $uuid)->firstOrFail();
+        // dd($item);
+        if (in_array($item->status, [2, 4, 5])) {
+            return redirect()->route('dashboard');
+        }
         $title = 'Validasi Data Ehay';
         return view('pages.ehay.validation', compact('item', 'title'));
     }
@@ -263,7 +267,6 @@ class EhayController extends Controller
                 // admin
                 if (request('btn') == 0) {
                     // reject
-
                     // is closed dipilih
                     if (request('is_closed')) {
                         $item->update([

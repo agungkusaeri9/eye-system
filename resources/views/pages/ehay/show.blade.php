@@ -163,18 +163,19 @@
                     </div>
                 </div>
 
-                @if (in_array(auth()->user()->role, [1, 4, 6]))
-                    <div class="col-md-12 mb-2">
-                        <div class="card">
-                            <div class="card-header pb-0 d-flex gap-2">
-                                <h4>Log Status</h4>
-                            </div>
-                            <div class="card-body row">
+                <div class="col-md-12 mb-2">
+                    <div class="card">
+                        <div class="card-header pb-0 d-flex gap-2">
+                            <h4>Log Status</h4>
+                        </div>
+                        <div class="card-body row">
+                            <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <thead class="table-dark">
                                         <tr>
-                                            <th>Tanggal</th>
-                                            <th>Status</th>
+                                            <th class="text-center">Tanggal</th>
+                                            <th class="text-center">Status</th>
+                                            <th class="text-center">Catatan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -182,6 +183,7 @@
                                             <tr>
                                                 <td>{{ $log->created_at->translatedFormat('d F Y H:i') }}</td>
                                                 <td>{{ $log->name }}</td>
+                                                <td>{{ $log->notes }}</td>
                                             </tr>
                                         @endforeach
                                     </tbody>
@@ -189,7 +191,7 @@
                             </div>
                         </div>
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>
