@@ -45,6 +45,7 @@ class EhayController extends Controller
                     if (auth()->user()->role == 1) {
                         return "Not Access";
                     } else {
+                        if (auth()->user()->email === "adminclaim2@gmail.com") return "Not Access";
                         $btn = '<a href="' . route('ehay.validation', $row->uuid) . '" class="btn btn-sm btn-danger me-1">Start Validation</a>';
                         return $btn;
                     }
@@ -247,7 +248,7 @@ class EhayController extends Controller
     {
         $item = Ehay::with(['employee.department'])->where('uuid', $uuid)->firstOrFail();
         // dd($item);
-        if (in_array($item->status, [2, 4, 5])) {
+        if (in_array($item->status, [2, 4, 5]) || auth()->user()->email === "adminclaim2@gmail.com") {
             return redirect()->route('dashboard');
         }
         $title = 'Validasi Data Ehay';
